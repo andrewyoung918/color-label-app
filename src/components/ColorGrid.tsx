@@ -9,6 +9,7 @@ interface ColorGridProps {
   onAddToLibrary?: (color: Color) => void
   onToggleSelection?: (colorId: string) => void
   onColorClick?: (color: Color) => void
+  onEdit?: (e: React.MouseEvent, color: Color) => void
   emptyMessage?: string
 }
 
@@ -20,6 +21,7 @@ export default function ColorGrid({
   onAddToLibrary,
   onToggleSelection,
   onColorClick,
+  onEdit,
   emptyMessage = 'No colors to display'
 }: ColorGridProps) {
   if (colors.length === 0) {
@@ -44,6 +46,7 @@ export default function ColorGrid({
           onAddToLibrary={onAddToLibrary}
           onToggleSelection={onToggleSelection}
           onClick={() => onColorClick?.(color)}
+          onEdit={onEdit ? (e) => onEdit(e, color) : undefined}
         />
       ))}
     </>

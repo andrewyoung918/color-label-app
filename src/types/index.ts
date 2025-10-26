@@ -5,6 +5,7 @@ export interface Color {
   hex: string
   rgb: [number, number, number]
   code?: string // Brand-specific code
+  customName?: string // User's custom name for the color
   addedAt?: Date
   inventory?: PaintInventory
 }

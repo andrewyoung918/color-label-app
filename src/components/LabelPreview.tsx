@@ -8,6 +8,9 @@ interface LabelPreviewProps {
 }
 
 export default function LabelPreview({ color, config, className = '' }: LabelPreviewProps) {
+  // Use custom name if available, otherwise use original name
+  const displayName = color.customName || color.name
+
   const textColor = config.textColor === 'auto'
     ? getContrastColor(color.hex)
     : config.textColor === 'custom' && config.customTextColor
@@ -70,7 +73,7 @@ export default function LabelPreview({ color, config, className = '' }: LabelPre
             className={`${fontWeight} mb-2 ${textAlign}`}
             style={{ fontSize: `${config.typography.nameSize}px` }}
           >
-            {color.name}
+            {displayName}
           </div>
           {config.showBrand && (
             <div
@@ -113,7 +116,7 @@ export default function LabelPreview({ color, config, className = '' }: LabelPre
             className={`${fontWeight} ${textAlign}`}
             style={{ fontSize: `${config.typography.nameSize}px` }}
           >
-            {color.name}
+            {displayName}
           </div>
           {config.showCode && color.code && (
             <div
@@ -134,7 +137,7 @@ export default function LabelPreview({ color, config, className = '' }: LabelPre
                 className={fontWeight}
                 style={{ fontSize: `${config.typography.nameSize}px` }}
               >
-                {color.name}
+                {displayName}
               </div>
               {config.showBrand && (
                 <div

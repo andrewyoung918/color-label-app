@@ -19,6 +19,7 @@ interface ColorStore {
   clearSelection: () => void
   loadLibraryFromStorage: () => void
   updateColorInventory: (colorId: string, inventory: PaintInventory) => void
+  updateCustomName: (colorId: string, customName: string) => void
 }
 
 export const useColorStore = create<ColorStore>((set, get) => ({
@@ -103,6 +104,16 @@ export const useColorStore = create<ColorStore>((set, get) => ({
     const { library } = get()
     const newLibrary = library.map(c =>
       c.id === colorId ? { ...c, inventory } : c
+    )
+    set({ library: newLibrary })
+    saveLibrary(newLibrary)
+  },
+
+  // Update custom name for a color
+  updateCustomName: (colorId: string, customName: string) => {
+    const { library } = get()
+    const newLibrary = library.map(c =>
+      c.id === colorId ? { ...c, customName: customName.trim() || undefined } : c
     )
     set({ library: newLibrary })
     saveLibrary(newLibrary)

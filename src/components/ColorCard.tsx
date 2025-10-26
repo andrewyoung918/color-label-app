@@ -1,6 +1,6 @@
 import { Color } from '@/types'
 import { getContrastColor } from '@/utils/colors'
-import { Plus, Check, Square, CheckSquare } from 'lucide-react'
+import { Plus, Check, Square, CheckSquare, Edit2 } from 'lucide-react'
 import { useState } from 'react'
 
 interface ColorCardProps {
@@ -11,6 +11,7 @@ interface ColorCardProps {
   onAddToLibrary?: (color: Color) => void
   onToggleSelection?: (colorId: string) => void
   onClick?: () => void
+  onEdit?: (e: React.MouseEvent) => void
 }
 
 export default function ColorCard({
@@ -20,7 +21,8 @@ export default function ColorCard({
   selectionMode = false,
   onAddToLibrary,
   onToggleSelection,
-  onClick
+  onClick,
+  onEdit
 }: ColorCardProps) {
   const [isHovered, setIsHovered] = useState(false)
   const textColor = getContrastColor(color.hex)
@@ -96,10 +98,28 @@ export default function ColorCard({
 
       {/* Color Information */}
       <div className="p-3 bg-white">
-        <h3 className="font-medium text-gray-900 text-sm truncate">
-          {color.name}
-        </h3>
-        <p className="text-xs text-gray-600 truncate">{color.brand}</p>
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex-1 min-w-0">
+            <h3 className="font-medium text-gray-900 text-sm truncate">
+              {color.customName || color.name}
+            </h3>
+            {color.customName && (
+              <p className="text-xs text-gray-500 truncate italic">
+                {color.name}
+              </p>
+            )}
+          </div>
+          {onEdit && isHovered && !selectionMode && (
+            <button
+              onClick={onEdit}
+              className="flex-shrink-0 p-1 hover:bg-gray-100 rounded transition-colors"
+              title="Edit name"
+            >
+              <Edit2 className="w-3 h-3 text-gray-600" />
+            </button>
+          )}
+        </div>
+        <p className="text-xs text-gray-600 truncate mt-1">{color.brand}</p>
         {color.code && (
           <p className="text-xs text-gray-500 mt-1">{color.code}</p>
         )}

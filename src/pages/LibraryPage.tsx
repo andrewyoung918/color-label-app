@@ -59,6 +59,9 @@ export default function LibraryPage() {
 
   // New state for inventory modal
   const [inventoryColor, setInventoryColor] = useState<Color | null>(null)
+  // New state for edit name modal
+  const [editNameColor, setEditNameColor] = useState<Color | null>(null)
+  const [customName, setCustomName] = useState('')
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Export library to JSON
@@ -109,6 +112,22 @@ export default function LibraryPage() {
   const handleColorClick = (color: Color) => {
     if (!isSelectionMode) {
       setInventoryColor(color)
+    }
+  }
+
+  // Handle edit name
+  const handleEditName = (e: React.MouseEvent, color: Color) => {
+    e.stopPropagation()
+    setEditNameColor(color)
+    setCustomName(color.customName || '')
+  }
+
+  // Save custom name
+  const handleSaveCustomName = () => {
+    if (editNameColor) {
+      useColorStore.getState().updateCustomName(editNameColor.id, customName)
+      setEditNameColor(null)
+      setCustomName('')
     }
   }
 
@@ -207,6 +226,7 @@ export default function LibraryPage() {
             selectionMode={isSelectionMode}
             onToggleSelection={toggleColorSelection}
             onColorClick={handleColorClick}
+            onEdit={handleEditName}
             emptyMessage="No colors in your library yet. Start by searching and adding colors!"
           />
         </div>
@@ -254,6 +274,51 @@ export default function LibraryPage() {
           onUpdateInventory={handleUpdateInventory}
           onClose={() => setInventoryColor(null)}
         />
+      )}
+
+      {/* Edit Name Modal */}
+      {editNameColor && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <h2 className="text-xl font-bold mb-4">Edit Color Name</h2>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Original Name
+              </label>
+              <p className="text-sm text-gray-600 mb-3">
+                {editNameColor.name} - {editNameColor.brand}
+              </p>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Custom Name
+              </label>
+              <input
+                type="text"
+                value={customName}
+                onChange={(e) => setCustomName(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                placeholder="Enter custom name (leave empty to use original)"
+                autoFocus
+              />
+            </div>
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => {
+                  setEditNameColor(null)
+                  setCustomName('')
+                }}
+                className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSaveCustomName}
+                className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )
