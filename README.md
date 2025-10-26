@@ -15,16 +15,33 @@ A modern web application for managing paint colors, creating palettes, and desig
 - Persistent storage using localStorage
 - Bulk selection for batch operations
 - Quick actions: remove, create palette, or create labels
+- Export/import library as JSON
+- Track paint inventory by sheen (flat, eggshell, satin, semi-gloss, gloss) and can size
 
 ### 🎯 Palette Management
 - Organize colors into named palettes
 - Visual palette preview
 - Easy palette deletion
 - Perfect for project organization
+- Detailed palette view with individual color cards
+- Export palettes as PDF
+- Copy color list to clipboard
+
+### 🔍 Browse Colors
+- Browse entire color database organized by color families
+- Filter by color categories (reds, blues, greens, yellows, etc.)
+- Statistics showing total colors and library count
+- Quick add to library from browse view
 
 ### 🏷️ Label Designer
 - Create printable labels for paint samples
 - Multiple layout options (Default, Minimal, Detailed)
+- Advanced typography controls:
+  - Font family selection (sans-serif, serif, monospace)
+  - Font weight adjustment
+  - Text alignment options
+  - Individual size controls for each text element
+  - Line height adjustment
 - Customizable display options
 - Auto-contrast text for readability
 - Export labels as PNG images
@@ -38,7 +55,10 @@ A modern web application for managing paint colors, creating palettes, and desig
 - **Tailwind CSS** - Utility-first styling
 - **Zustand** - State management
 - **React Router** - Client-side routing
+- **colornerd** - Comprehensive paint color database
+- **jsPDF** - PDF generation for palettes
 - **html2canvas** - Label export functionality
+- **date-fns** - Date formatting
 - **Lucide React** - Beautiful icons
 
 ## Getting Started
@@ -171,6 +191,46 @@ All data is stored locally in your browser:
 - Functional components with hooks
 - Tailwind CSS for styling
 - ESLint for code quality
+
+## Deployment
+
+### GitHub Pages
+
+This app is configured for easy deployment to GitHub Pages.
+
+#### Option 1: Manual Deployment
+
+1. Build and deploy to GitHub Pages:
+```bash
+npm run deploy
+```
+
+This will build the app and push it to the `gh-pages` branch.
+
+#### Option 2: Automatic Deployment (Recommended)
+
+The project includes a GitHub Actions workflow that automatically deploys to GitHub Pages when you push to the main branch.
+
+To set this up:
+
+1. Go to your GitHub repository settings
+2. Navigate to Settings → Pages
+3. Under "Build and deployment", select "GitHub Actions" as the source
+4. Push your code to the main branch
+5. The app will be automatically built and deployed
+
+Your app will be available at: `https://andrewyoung918.github.io/color-label-app/`
+
+### Alternative Deployment Options
+
+Since this is a static web app, you can also deploy to:
+
+- **Netlify**: Drop the `dist` folder or connect your GitHub repo
+- **Vercel**: Import your GitHub repo directly
+- **Cloudflare Pages**: Connect your GitHub repo
+- **AWS S3 + CloudFront**: Upload the `dist` folder to S3
+
+Note: If deploying to a service other than GitHub Pages, update the `base` configuration in `vite.config.ts` to `/` instead of `/color-label-app/`.
 
 ## Browser Support
 

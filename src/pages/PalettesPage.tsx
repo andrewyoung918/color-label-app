@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { Plus, Trash2, Edit2 } from 'lucide-react'
+import { Plus, Trash2 } from 'lucide-react'
 import { usePaletteStore } from '@/stores/usePaletteStore'
 import { useNavigate } from 'react-router-dom'
 import { format } from 'date-fns'
@@ -53,11 +53,12 @@ export default function PalettesPage() {
             <div
               key={palette.id}
               className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow cursor-pointer group"
+              onClick={() => navigate(`/palettes/${palette.id}`)}
             >
               {/* Color Preview */}
               <div className="h-24 flex">
                 {palette.colors.length > 0 ? (
-                  palette.colors.slice(0, 6).map((color, index) => (
+                  palette.colors.slice(0, 6).map((color) => (
                     <div
                       key={color.id}
                       className="flex-1"

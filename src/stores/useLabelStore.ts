@@ -20,13 +20,23 @@ const defaultConfig: LabelConfig = {
   showBrand: true,
   showCode: true,
   showRgb: false,
-  fontSize: 'medium',
+  showHex: false,
   dimensions: {
     width: 3,
     height: 2
   },
   backgroundColor: 'color',
-  textColor: 'auto'
+  textColor: 'auto',
+  typography: {
+    nameSize: 24,
+    brandSize: 14,
+    codeSize: 12,
+    detailsSize: 11,
+    fontFamily: 'sans',
+    fontWeight: 'normal',
+    alignment: 'center',
+    lineHeight: 'normal'
+  }
 }
 
 export const useLabelStore = create<LabelStore>((set, get) => ({
@@ -46,35 +56,50 @@ export const useLabelStore = create<LabelStore>((set, get) => ({
     set({ previewColors: colors })
   },
 
-  // Export labels as image or PDF
+  // Export labels as individual images
   exportLabels: async (format: 'png' | 'pdf', elementRef: HTMLElement) => {
     set({ exportLoading: true })
 
     try {
       if (format === 'png') {
-        // Use html2canvas to capture the element
-        const canvas = await html2canvas(elementRef, {
-          scale: 2, // High quality
-          backgroundColor: '#ffffff',
-          logging: false
-        })
+        // Find all label elements (children of the container)
+        const labelElements = elementRef.querySelectorAll(':scope > div')
 
-        // Convert to blob and download
-        canvas.toBlob((blob) => {
-          if (blob) {
-            const url = URL.createObjectURL(blob)
-            const a = document.createElement('a')
-            a.href = url
-            a.download = `color-labels-${Date.now()}.png`
-            document.body.appendChild(a)
-            a.click()
-            document.body.removeChild(a)
-            URL.revokeObjectURL(url)
-          }
-        }, 'image/png')
+        if (labelElements.length === 0) {
+          console.error('No labels found to export')
+          set({ exportLoading: false })
+          return
+        }
+
+        // Export each label individually
+        for (let i = 0; i < labelElements.length; i++) {
+          const labelElement = labelElements[i] as HTMLElement
+          const canvas = await html2canvas(labelElement, {
+            scale: 3, // High quality for printing
+            backgroundColor: null, // Transparent background
+            logging: false
+          })
+
+          // Convert to blob and download
+          await new Promise<void>((resolve) => {
+            canvas.toBlob((blob) => {
+              if (blob) {
+                const url = URL.createObjectURL(blob)
+                const a = document.createElement('a')
+                a.href = url
+                a.download = `label-${i + 1}-${Date.now()}.png`
+                document.body.appendChild(a)
+                a.click()
+                document.body.removeChild(a)
+                URL.revokeObjectURL(url)
+              }
+              // Small delay between downloads to avoid browser blocking
+              setTimeout(() => resolve(), 100)
+            }, 'image/png')
+          })
+        }
       } else if (format === 'pdf') {
-        // For PDF, we would need a library like jsPDF
-        // For now, we'll just export as PNG
+        // For PDF, export as PNG for now
         console.log('PDF export not yet implemented, exporting as PNG instead')
         await get().exportLabels('png', elementRef)
       }

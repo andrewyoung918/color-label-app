@@ -10,19 +10,44 @@ interface LabelPreviewProps {
 export default function LabelPreview({ color, config, className = '' }: LabelPreviewProps) {
   const textColor = config.textColor === 'auto'
     ? getContrastColor(color.hex)
-    : config.textColor
+    : config.textColor === 'custom' && config.customTextColor
+      ? config.customTextColor
+      : config.textColor
 
   const bgColor = config.backgroundColor === 'color'
     ? color.hex
-    : config.backgroundColor === 'white'
-      ? '#ffffff'
-      : '#000000'
+    : config.backgroundColor === 'custom' && config.customBackgroundColor
+      ? config.customBackgroundColor
+      : config.backgroundColor === 'white'
+        ? '#ffffff'
+        : '#000000'
 
-  const fontSize = {
-    small: { name: 'text-lg', details: 'text-xs' },
-    medium: { name: 'text-2xl', details: 'text-sm' },
-    large: { name: 'text-3xl', details: 'text-base' }
-  }[config.fontSize]
+  // Typography styles
+  const fontFamily = {
+    sans: 'font-sans',
+    serif: 'font-serif',
+    mono: 'font-mono'
+  }[config.typography.fontFamily]
+
+  const fontWeight = {
+    light: 'font-light',
+    normal: 'font-normal',
+    medium: 'font-medium',
+    semibold: 'font-semibold',
+    bold: 'font-bold'
+  }[config.typography.fontWeight]
+
+  const textAlign = {
+    left: 'text-left',
+    center: 'text-center',
+    right: 'text-right'
+  }[config.typography.alignment]
+
+  const lineHeight = {
+    tight: 'leading-tight',
+    normal: 'leading-normal',
+    loose: 'leading-loose'
+  }[config.typography.lineHeight]
 
   const dimensions = {
     width: config.dimensions.width * 96, // Convert inches to pixels (96 DPI)
@@ -31,7 +56,7 @@ export default function LabelPreview({ color, config, className = '' }: LabelPre
 
   return (
     <div
-      className={`rounded-lg shadow-lg overflow-hidden ${className}`}
+      className={`shadow-lg overflow-hidden ${className}`}
       style={{
         width: dimensions.width,
         height: dimensions.height,
@@ -40,22 +65,42 @@ export default function LabelPreview({ color, config, className = '' }: LabelPre
       }}
     >
       {config.layout === 'default' && (
-        <div className="p-6 h-full flex flex-col justify-center items-center text-center">
-          <div className={`font-bold ${fontSize.name} mb-2`}>
+        <div className={`p-6 h-full flex flex-col justify-center items-center ${fontFamily} ${lineHeight}`}>
+          <div
+            className={`${fontWeight} mb-2 ${textAlign}`}
+            style={{ fontSize: `${config.typography.nameSize}px` }}
+          >
             {color.name}
           </div>
           {config.showBrand && (
-            <div className={`${fontSize.details} opacity-90`}>
+            <div
+              className="opacity-90"
+              style={{ fontSize: `${config.typography.brandSize}px` }}
+            >
               {color.brand}
             </div>
           )}
           {config.showCode && color.code && (
-            <div className={`${fontSize.details} opacity-75 mt-1`}>
+            <div
+              className="opacity-75 mt-1"
+              style={{ fontSize: `${config.typography.codeSize}px` }}
+            >
               {color.code}
             </div>
           )}
+          {config.showHex && (
+            <div
+              className="opacity-75 mt-1 font-mono"
+              style={{ fontSize: `${config.typography.detailsSize}px` }}
+            >
+              {color.hex.toUpperCase()}
+            </div>
+          )}
           {config.showRgb && (
-            <div className={`${fontSize.details} opacity-75 mt-1 font-mono`}>
+            <div
+              className="opacity-75 mt-1 font-mono"
+              style={{ fontSize: `${config.typography.detailsSize}px` }}
+            >
               RGB({color.rgb.join(', ')})
             </div>
           )}
@@ -63,12 +108,18 @@ export default function LabelPreview({ color, config, className = '' }: LabelPre
       )}
 
       {config.layout === 'minimal' && (
-        <div className="p-4 h-full flex flex-col justify-center items-center">
-          <div className={`font-bold ${fontSize.name}`}>
+        <div className={`p-4 h-full flex flex-col justify-center items-center ${fontFamily} ${lineHeight}`}>
+          <div
+            className={`${fontWeight} ${textAlign}`}
+            style={{ fontSize: `${config.typography.nameSize}px` }}
+          >
             {color.name}
           </div>
           {config.showCode && color.code && (
-            <div className={`${fontSize.details} opacity-75 mt-1`}>
+            <div
+              className="opacity-75 mt-1"
+              style={{ fontSize: `${config.typography.codeSize}px` }}
+            >
               {color.code}
             </div>
           )}
@@ -76,32 +127,49 @@ export default function LabelPreview({ color, config, className = '' }: LabelPre
       )}
 
       {config.layout === 'detailed' && (
-        <div className="p-6 h-full">
+        <div className={`p-6 h-full ${fontFamily} ${lineHeight}`}>
           <div className="h-full flex flex-col justify-between">
-            <div>
-              <div className={`font-bold ${fontSize.name}`}>
+            <div className={textAlign}>
+              <div
+                className={fontWeight}
+                style={{ fontSize: `${config.typography.nameSize}px` }}
+              >
                 {color.name}
               </div>
               {config.showBrand && (
-                <div className={`${fontSize.details} opacity-90 mt-1`}>
+                <div
+                  className="opacity-90 mt-1"
+                  style={{ fontSize: `${config.typography.brandSize}px` }}
+                >
                   {color.brand}
                 </div>
               )}
             </div>
-            <div>
+            <div className={textAlign}>
               {config.showCode && color.code && (
-                <div className={`${fontSize.details} opacity-75`}>
+                <div
+                  className="opacity-75"
+                  style={{ fontSize: `${config.typography.codeSize}px` }}
+                >
                   Code: {color.code}
                 </div>
               )}
+              {config.showHex && (
+                <div
+                  className="opacity-75 mt-1"
+                  style={{ fontSize: `${config.typography.detailsSize}px` }}
+                >
+                  HEX: {color.hex.toUpperCase()}
+                </div>
+              )}
               {config.showRgb && (
-                <div className={`${fontSize.details} opacity-75 mt-1 font-mono`}>
+                <div
+                  className="opacity-75 mt-1 font-mono"
+                  style={{ fontSize: `${config.typography.detailsSize}px` }}
+                >
                   RGB: {color.rgb.join(', ')}
                 </div>
               )}
-              <div className={`${fontSize.details} opacity-75 mt-1`}>
-                HEX: {color.hex}
-              </div>
             </div>
           </div>
         </div>

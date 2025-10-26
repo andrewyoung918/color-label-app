@@ -5,6 +5,8 @@ import path from 'path'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  // Set base path for GitHub Pages deployment
+  base: process.env.NODE_ENV === 'production' ? '/color-label-app/' : '/',
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),

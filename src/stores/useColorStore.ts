@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { Color } from '@/types'
+import { Color, PaintInventory } from '@/types'
 import { saveLibrary, loadLibrary } from '@/utils/storage'
 import { searchColors as searchColorData } from '@/utils/colorData'
 
@@ -18,6 +18,7 @@ interface ColorStore {
   toggleColorSelection: (colorId: string) => void
   clearSelection: () => void
   loadLibraryFromStorage: () => void
+  updateColorInventory: (colorId: string, inventory: PaintInventory) => void
 }
 
 export const useColorStore = create<ColorStore>((set, get) => ({
@@ -95,5 +96,15 @@ export const useColorStore = create<ColorStore>((set, get) => ({
   loadLibraryFromStorage: () => {
     const library = loadLibrary()
     set({ library })
+  },
+
+  // Update color inventory
+  updateColorInventory: (colorId: string, inventory: PaintInventory) => {
+    const { library } = get()
+    const newLibrary = library.map(c =>
+      c.id === colorId ? { ...c, inventory } : c
+    )
+    set({ library: newLibrary })
+    saveLibrary(newLibrary)
   }
 }))

@@ -1,10 +1,12 @@
-import { useState, useEffect } from 'react'
-import { Trash2, Palette, Tag } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react'
+import { Trash2, Palette, Tag, Download, Upload } from 'lucide-react'
 import { useColorStore } from '@/stores/useColorStore'
 import { usePaletteStore } from '@/stores/usePaletteStore'
 import { useLabelStore } from '@/stores/useLabelStore'
 import { useNavigate } from 'react-router-dom'
 import ColorGrid from '@/components/ColorGrid'
+import PaintInventory from '@/components/PaintInventory'
+import { Color, PaintInventory as PaintInventoryType } from '@/types'
 
 export default function LibraryPage() {
   const navigate = useNavigate()
@@ -55,6 +57,61 @@ export default function LibraryPage() {
     navigate('/labels')
   }
 
+  // New state for inventory modal
+  const [inventoryColor, setInventoryColor] = useState<Color | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  // Export library to JSON
+  const handleExportLibrary = () => {
+    const dataStr = JSON.stringify(library, null, 2)
+    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr)
+
+    const exportFileDefaultName = `color-library-${new Date().toISOString().split('T')[0]}.json`
+
+    const linkElement = document.createElement('a')
+    linkElement.setAttribute('href', dataUri)
+    linkElement.setAttribute('download', exportFileDefaultName)
+    linkElement.click()
+  }
+
+  // Import library from JSON
+  const handleImportLibrary = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        try {
+          const importedColors = JSON.parse(e.target?.result as string) as Color[]
+          // Add imported colors to library (avoiding duplicates)
+          const existingIds = new Set(library.map(c => c.id))
+          const newColors = importedColors.filter(c => !existingIds.has(c.id))
+
+          // Add new colors to the library
+          newColors.forEach(color => {
+            useColorStore.getState().addToLibrary(color)
+          })
+
+          alert(`Imported ${newColors.length} new colors!`)
+        } catch (error) {
+          alert('Failed to import library. Please check the file format.')
+        }
+      }
+      reader.readAsText(file)
+    }
+  }
+
+  // Update color inventory
+  const handleUpdateInventory = (colorId: string, inventory: PaintInventoryType) => {
+    useColorStore.getState().updateColorInventory(colorId, inventory)
+  }
+
+  // Handle color click - open inventory
+  const handleColorClick = (color: Color) => {
+    if (!isSelectionMode) {
+      setInventoryColor(color)
+    }
+  }
+
   return (
     <div className="space-y-6">
       {/* Library Header */}
@@ -68,17 +125,42 @@ export default function LibraryPage() {
               Your saved colors for creating palettes and labels
             </p>
           </div>
-          {library.length > 0 && (
+          <div className="flex gap-2">
+            {/* Import/Export Buttons */}
             <button
-              onClick={() => {
-                setIsSelectionMode(!isSelectionMode)
-                clearSelection()
-              }}
-              className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+              onClick={handleExportLibrary}
+              className="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors flex items-center gap-2"
+              disabled={library.length === 0}
             >
-              {isSelectionMode ? 'Cancel' : 'Select'}
+              <Download className="w-4 h-4" />
+              Export
             </button>
-          )}
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors flex items-center gap-2"
+            >
+              <Upload className="w-4 h-4" />
+              Import
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".json"
+              onChange={handleImportLibrary}
+              className="hidden"
+            />
+            {library.length > 0 && (
+              <button
+                onClick={() => {
+                  setIsSelectionMode(!isSelectionMode)
+                  clearSelection()
+                }}
+                className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+              >
+                {isSelectionMode ? 'Cancel' : 'Select'}
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -124,6 +206,7 @@ export default function LibraryPage() {
             selectedColors={selectedColors}
             selectionMode={isSelectionMode}
             onToggleSelection={toggleColorSelection}
+            onColorClick={handleColorClick}
             emptyMessage="No colors in your library yet. Start by searching and adding colors!"
           />
         </div>
@@ -162,6 +245,15 @@ export default function LibraryPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Paint Inventory Modal */}
+      {inventoryColor && (
+        <PaintInventory
+          color={inventoryColor}
+          onUpdateInventory={handleUpdateInventory}
+          onClose={() => setInventoryColor(null)}
+        />
       )}
     </div>
   )

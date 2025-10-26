@@ -6,6 +6,23 @@ export interface Color {
   rgb: [number, number, number]
   code?: string // Brand-specific code
   addedAt?: Date
+  inventory?: PaintInventory
+}
+
+export interface PaintInventory {
+  sheens: {
+    flat?: PaintCan[]
+    eggshell?: PaintCan[]
+    satin?: PaintCan[]
+    semiGloss?: PaintCan[]
+    gloss?: PaintCan[]
+  }
+}
+
+export interface PaintCan {
+  size: 'sample' | 'quart' | 'gallon' | '5-gallon'
+  quantity: number
+  notes?: string
 }
 
 export interface Palette {
@@ -21,13 +38,25 @@ export interface LabelConfig {
   showBrand: boolean
   showCode: boolean
   showRgb: boolean
-  fontSize: 'small' | 'medium' | 'large'
+  showHex: boolean
   dimensions: {
     width: number
     height: number
   }
-  backgroundColor: 'color' | 'white' | 'black'
-  textColor: 'auto' | 'black' | 'white'
+  backgroundColor: 'color' | 'white' | 'black' | 'custom'
+  customBackgroundColor?: string
+  textColor: 'auto' | 'black' | 'white' | 'custom'
+  customTextColor?: string
+  typography: {
+    nameSize: number // in pixels
+    brandSize: number
+    codeSize: number
+    detailsSize: number
+    fontFamily: 'sans' | 'serif' | 'mono'
+    fontWeight: 'light' | 'normal' | 'medium' | 'semibold' | 'bold'
+    alignment: 'left' | 'center' | 'right'
+    lineHeight: 'tight' | 'normal' | 'loose'
+  }
 }
 
 export interface SearchResult {
