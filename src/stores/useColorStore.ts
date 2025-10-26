@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { Color } from '@/types'
 import { saveLibrary, loadLibrary } from '@/utils/storage'
-import { generateColorId } from '@/utils/colors'
+import { searchColors as searchColorData } from '@/utils/colorData'
 
 interface ColorStore {
   // State
@@ -28,88 +28,20 @@ export const useColorStore = create<ColorStore>((set, get) => ({
   searchTerm: '',
   loading: false,
 
-  // Search for colors using colornerd
+  // Search for colors using real colornerd data
   searchColors: async (term: string) => {
     set({ searchTerm: term, loading: true })
 
+    // Simulate async search for better UX
+    await new Promise(resolve => setTimeout(resolve, 200))
+
     try {
-      // Import colornerd dynamically
-      const colornerd = await import('colornerd')
-
-      // Search across all brands
-      const results: Color[] = []
-
-      // Get colors from different brands
-      const brands = ['benjamin-moore', 'sherwin-williams', 'behr', 'valspar']
-
-      for (const brand of brands) {
-        try {
-          // Try to get colors from each brand
-          const brandColors = await colornerd.default.getColors(brand)
-
-          // Filter by search term
-          const filtered = brandColors.filter((color: any) => {
-            const searchLower = term.toLowerCase()
-            return (
-              color.name?.toLowerCase().includes(searchLower) ||
-              color.code?.toLowerCase().includes(searchLower) ||
-              color.hex?.toLowerCase().includes(searchLower)
-            )
-          })
-
-          // Map to our Color type
-          filtered.forEach((color: any) => {
-            const mappedColor: Color = {
-              id: generateColorId({ brand, name: color.name, hex: color.hex }),
-              name: color.name || 'Unknown',
-              brand: brand.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase()),
-              hex: color.hex || '#000000',
-              rgb: color.rgb || [0, 0, 0],
-              code: color.code
-            }
-            results.push(mappedColor)
-          })
-        } catch (error) {
-          console.warn(`Failed to fetch colors from ${brand}:`, error)
-        }
-      }
-
+      // Use the real colornerd data
+      const results = searchColorData(term)
       set({ searchResults: results, loading: false })
     } catch (error) {
       console.error('Failed to search colors:', error)
-
-      // Fallback with mock data for development
-      const mockColors: Color[] = [
-        {
-          id: 'mock-1',
-          name: 'Naval',
-          brand: 'Sherwin Williams',
-          hex: '#253342',
-          rgb: [37, 51, 66],
-          code: 'SW 6244'
-        },
-        {
-          id: 'mock-2',
-          name: 'Hale Navy',
-          brand: 'Benjamin Moore',
-          hex: '#434F5B',
-          rgb: [67, 79, 91],
-          code: 'HC-154'
-        },
-        {
-          id: 'mock-3',
-          name: 'Sea Salt',
-          brand: 'Sherwin Williams',
-          hex: '#CDD4D1',
-          rgb: [205, 212, 209],
-          code: 'SW 6204'
-        }
-      ].filter(color =>
-        color.name.toLowerCase().includes(term.toLowerCase()) ||
-        color.brand.toLowerCase().includes(term.toLowerCase())
-      )
-
-      set({ searchResults: mockColors, loading: false })
+      set({ searchResults: [], loading: false })
     }
   },
 
