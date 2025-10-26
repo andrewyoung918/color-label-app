@@ -8,6 +8,7 @@ const ITEMS_PER_PAGE = 100
 
 export default function BrowsePage() {
   const [selectedFamily, setSelectedFamily] = useState<ColorFamily | 'all'>('all')
+  const [selectedBrand, setSelectedBrand] = useState<string | 'all'>('all')
   const [displayCount, setDisplayCount] = useState(ITEMS_PER_PAGE)
   const { library, addToLibrary } = useColorStore()
   const loadMoreRef = useRef<HTMLDivElement>(null)
@@ -16,10 +17,26 @@ export default function BrowsePage() {
   const allColors = useMemo(() => getAllColors(), [])
   const colorsByFamily = useMemo(() => groupColorsByFamily(allColors), [allColors])
 
+  // Get unique brands
+  const brands = useMemo(() => {
+    const brandSet = new Set(allColors.map(c => c.brand))
+    return Array.from(brandSet).sort()
+  }, [allColors])
+
   // Get all colors to display based on selection
-  const allDisplayColors = selectedFamily === 'all'
-    ? allColors
-    : colorsByFamily[selectedFamily]
+  const allDisplayColors = useMemo(() => {
+    // First filter by family
+    let filtered = selectedFamily === 'all'
+      ? allColors
+      : colorsByFamily[selectedFamily]
+
+    // Then filter by brand
+    if (selectedBrand !== 'all') {
+      filtered = filtered.filter(c => c.brand === selectedBrand)
+    }
+
+    return filtered
+  }, [selectedFamily, selectedBrand, allColors, colorsByFamily])
 
   // Get the visible slice of colors
   const displayColors = allDisplayColors.slice(0, displayCount)
@@ -27,10 +44,10 @@ export default function BrowsePage() {
 
   const families = Object.keys(colorsByFamily) as ColorFamily[]
 
-  // Reset display count when family changes
+  // Reset display count when family or brand changes
   useEffect(() => {
     setDisplayCount(ITEMS_PER_PAGE)
-  }, [selectedFamily])
+  }, [selectedFamily, selectedBrand])
 
   // Load more items
   const loadMore = useCallback(() => {
@@ -122,6 +139,49 @@ export default function BrowsePage() {
             </div>
           </div>
 
+          {/* Brand Filter */}
+          <div className="bg-white rounded-lg shadow-sm p-4 mt-4">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Brands</h2>
+
+            {/* All Brands Option */}
+            <button
+              onClick={() => setSelectedBrand('all')}
+              className={`w-full text-left px-3 py-2 rounded-lg transition-colors mb-2 ${
+                selectedBrand === 'all'
+                  ? 'bg-primary-100 text-primary-700'
+                  : 'hover:bg-gray-50'
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <span className="font-medium">All Brands</span>
+                <span className="text-sm text-gray-500">{allColors.length}</span>
+              </div>
+            </button>
+
+            {/* Brand List */}
+            <div className="space-y-1">
+              {brands.map(brand => {
+                const brandColors = allColors.filter(c => c.brand === brand)
+                return (
+                  <button
+                    key={brand}
+                    onClick={() => setSelectedBrand(brand)}
+                    className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${
+                      selectedBrand === brand
+                        ? 'bg-primary-100 text-primary-700'
+                        : 'hover:bg-gray-50'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-medium text-sm">{brand}</span>
+                      <span className="text-sm text-gray-500">{brandColors.length}</span>
+                    </div>
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+
           {/* Statistics */}
           <div className="bg-white rounded-lg shadow-sm p-4 mt-4">
             <h3 className="text-sm font-semibold text-gray-900 mb-3">Statistics</h3>
@@ -131,12 +191,16 @@ export default function BrowsePage() {
                 <span className="font-medium">{allColors.length}</span>
               </div>
               <div className="flex justify-between">
+                <span className="text-gray-600">Filtered:</span>
+                <span className="font-medium text-primary-600">{allDisplayColors.length}</span>
+              </div>
+              <div className="flex justify-between">
                 <span className="text-gray-600">In Library:</span>
                 <span className="font-medium text-green-600">{library.length}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Brands:</span>
-                <span className="font-medium">5</span>
+                <span className="font-medium">{brands.length}</span>
               </div>
             </div>
           </div>
