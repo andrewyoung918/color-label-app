@@ -1,23 +1,61 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect, useRef, useCallback } from 'react'
 import { getAllColors } from '@/utils/colorData'
 import { groupColorsByFamily, getColorFamilyDisplayName, getColorFamilyHex, ColorFamily } from '@/utils/colorCategories'
 import { useColorStore } from '@/stores/useColorStore'
 import ColorGrid from '@/components/ColorGrid'
 
+const ITEMS_PER_PAGE = 100
+
 export default function BrowsePage() {
   const [selectedFamily, setSelectedFamily] = useState<ColorFamily | 'all'>('all')
+  const [displayCount, setDisplayCount] = useState(ITEMS_PER_PAGE)
   const { library, addToLibrary } = useColorStore()
+  const loadMoreRef = useRef<HTMLDivElement>(null)
 
   // Get all colors and group them
   const allColors = useMemo(() => getAllColors(), [])
   const colorsByFamily = useMemo(() => groupColorsByFamily(allColors), [allColors])
 
-  // Get colors to display based on selection
-  const displayColors = selectedFamily === 'all'
+  // Get all colors to display based on selection
+  const allDisplayColors = selectedFamily === 'all'
     ? allColors
     : colorsByFamily[selectedFamily]
 
+  // Get the visible slice of colors
+  const displayColors = allDisplayColors.slice(0, displayCount)
+  const hasMore = displayCount < allDisplayColors.length
+
   const families = Object.keys(colorsByFamily) as ColorFamily[]
+
+  // Reset display count when family changes
+  useEffect(() => {
+    setDisplayCount(ITEMS_PER_PAGE)
+  }, [selectedFamily])
+
+  // Load more items
+  const loadMore = useCallback(() => {
+    if (hasMore) {
+      setDisplayCount(prev => prev + ITEMS_PER_PAGE)
+    }
+  }, [hasMore])
+
+  // Intersection Observer for infinite scroll
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore) {
+          loadMore()
+        }
+      },
+      { threshold: 0.1 }
+    )
+
+    if (loadMoreRef.current) {
+      observer.observe(loadMoreRef.current)
+    }
+
+    return () => observer.disconnect()
+  }, [loadMore, hasMore])
 
   return (
     <div className="space-y-6">
@@ -111,26 +149,36 @@ export default function BrowsePage() {
               <h2 className="text-lg font-semibold text-gray-900">
                 {selectedFamily === 'all'
                   ? 'All Colors'
-                  : `${getColorFamilyDisplayName(selectedFamily)} (${displayColors.length})`
+                  : `${getColorFamilyDisplayName(selectedFamily)}`
                 }
               </h2>
               <div className="text-sm text-gray-500">
-                Showing {Math.min(100, displayColors.length)} of {displayColors.length} colors
+                Showing {displayColors.length} of {allDisplayColors.length} colors
               </div>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
               <ColorGrid
-                colors={displayColors.slice(0, 100)}
+                colors={displayColors}
                 libraryColors={library}
                 onAddToLibrary={addToLibrary}
                 emptyMessage="No colors found in this category"
               />
             </div>
 
-            {displayColors.length > 100 && (
-              <div className="mt-4 text-center text-sm text-gray-500">
-                Showing first 100 colors. Use search to find specific colors.
+            {/* Infinite scroll trigger */}
+            {hasMore && (
+              <div ref={loadMoreRef} className="mt-6 text-center py-4">
+                <div className="inline-flex items-center gap-2 text-sm text-gray-500">
+                  <div className="w-4 h-4 border-2 border-gray-300 border-t-primary-600 rounded-full animate-spin"></div>
+                  Loading more colors...
+                </div>
+              </div>
+            )}
+
+            {!hasMore && displayColors.length > 0 && (
+              <div className="mt-6 text-center text-sm text-gray-500">
+                All {allDisplayColors.length} colors loaded
               </div>
             )}
           </div>
