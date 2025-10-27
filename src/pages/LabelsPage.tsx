@@ -326,58 +326,98 @@ export default function LabelsPage() {
                   <div className="space-y-3">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Name Size: {config.typography.nameSize}px
+                        Name Size
                       </label>
-                      <input
-                        type="range"
-                        min="12"
-                        max="48"
-                        value={config.typography.nameSize}
-                        onChange={(e) => updateTypography('nameSize', parseInt(e.target.value))}
-                        className="w-full"
-                      />
+                      <div className="flex gap-2 items-center">
+                        <input
+                          type="range"
+                          min="12"
+                          max="48"
+                          value={config.typography.nameSize}
+                          onChange={(e) => updateTypography('nameSize', parseInt(e.target.value))}
+                          className="flex-1"
+                        />
+                        <input
+                          type="number"
+                          value={config.typography.nameSize}
+                          onChange={(e) => updateTypography('nameSize', parseInt(e.target.value) || 24)}
+                          min="1"
+                          className="w-16 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                        />
+                        <span className="text-sm text-gray-600">px</span>
+                      </div>
                     </div>
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Brand Size: {config.typography.brandSize}px
+                        Brand Size
                       </label>
-                      <input
-                        type="range"
-                        min="8"
-                        max="24"
-                        value={config.typography.brandSize}
-                        onChange={(e) => updateTypography('brandSize', parseInt(e.target.value))}
-                        className="w-full"
-                      />
+                      <div className="flex gap-2 items-center">
+                        <input
+                          type="range"
+                          min="8"
+                          max="24"
+                          value={config.typography.brandSize}
+                          onChange={(e) => updateTypography('brandSize', parseInt(e.target.value))}
+                          className="flex-1"
+                        />
+                        <input
+                          type="number"
+                          value={config.typography.brandSize}
+                          onChange={(e) => updateTypography('brandSize', parseInt(e.target.value) || 14)}
+                          min="1"
+                          className="w-16 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                        />
+                        <span className="text-sm text-gray-600">px</span>
+                      </div>
                     </div>
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Code Size: {config.typography.codeSize}px
+                        Code Size
                       </label>
-                      <input
-                        type="range"
-                        min="8"
-                        max="20"
-                        value={config.typography.codeSize}
-                        onChange={(e) => updateTypography('codeSize', parseInt(e.target.value))}
-                        className="w-full"
-                      />
+                      <div className="flex gap-2 items-center">
+                        <input
+                          type="range"
+                          min="8"
+                          max="20"
+                          value={config.typography.codeSize}
+                          onChange={(e) => updateTypography('codeSize', parseInt(e.target.value))}
+                          className="flex-1"
+                        />
+                        <input
+                          type="number"
+                          value={config.typography.codeSize}
+                          onChange={(e) => updateTypography('codeSize', parseInt(e.target.value) || 12)}
+                          min="1"
+                          className="w-16 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                        />
+                        <span className="text-sm text-gray-600">px</span>
+                      </div>
                     </div>
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Details Size: {config.typography.detailsSize}px
+                        Details Size
                       </label>
-                      <input
-                        type="range"
-                        min="8"
-                        max="18"
-                        value={config.typography.detailsSize}
-                        onChange={(e) => updateTypography('detailsSize', parseInt(e.target.value))}
-                        className="w-full"
-                      />
+                      <div className="flex gap-2 items-center">
+                        <input
+                          type="range"
+                          min="8"
+                          max="18"
+                          value={config.typography.detailsSize}
+                          onChange={(e) => updateTypography('detailsSize', parseInt(e.target.value))}
+                          className="flex-1"
+                        />
+                        <input
+                          type="number"
+                          value={config.typography.detailsSize}
+                          onChange={(e) => updateTypography('detailsSize', parseInt(e.target.value) || 11)}
+                          min="1"
+                          className="w-16 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                        />
+                        <span className="text-sm text-gray-600">px</span>
+                      </div>
                     </div>
                   </div>
                 </>

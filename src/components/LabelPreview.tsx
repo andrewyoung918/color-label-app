@@ -83,6 +83,14 @@ export default function LabelPreview({ color, config, className = '' }: LabelPre
               {color.brand}
             </div>
           )}
+          {config.showSheen && color.sheen && (
+            <div
+              className="opacity-75 mt-1"
+              style={{ fontSize: `${config.typography.detailsSize}px` }}
+            >
+              {color.sheen === 'semiGloss' ? 'Semi-Gloss' : color.sheen.charAt(0).toUpperCase() + color.sheen.slice(1)}
+            </div>
+          )}
           {config.showCode && color.code && (
             <div
               className="opacity-75 mt-1"
@@ -107,14 +115,6 @@ export default function LabelPreview({ color, config, className = '' }: LabelPre
               RGB({color.rgb.join(', ')})
             </div>
           )}
-          {config.showSheen && color.sheen && (
-            <div
-              className="opacity-75 mt-1"
-              style={{ fontSize: `${config.typography.detailsSize}px` }}
-            >
-              {color.sheen === 'semiGloss' ? 'Semi-Gloss' : color.sheen.charAt(0).toUpperCase() + color.sheen.slice(1)}
-            </div>
-          )}
         </div>
       )}
 
@@ -126,12 +126,12 @@ export default function LabelPreview({ color, config, className = '' }: LabelPre
           >
             {displayName}
           </div>
-          {config.showCode && color.code && (
+          {config.showBrand && (
             <div
-              className="opacity-75 mt-1"
-              style={{ fontSize: `${config.typography.codeSize}px` }}
+              className="opacity-90 mt-1"
+              style={{ fontSize: `${config.typography.brandSize}px` }}
             >
-              {color.code}
+              {color.brand}
             </div>
           )}
           {config.showSheen && color.sheen && (
@@ -140,6 +140,14 @@ export default function LabelPreview({ color, config, className = '' }: LabelPre
               style={{ fontSize: `${config.typography.detailsSize}px` }}
             >
               {color.sheen === 'semiGloss' ? 'Semi-Gloss' : color.sheen.charAt(0).toUpperCase() + color.sheen.slice(1)}
+            </div>
+          )}
+          {config.showCode && color.code && (
+            <div
+              className="opacity-75 mt-1"
+              style={{ fontSize: `${config.typography.codeSize}px` }}
+            >
+              {color.code}
             </div>
           )}
         </div>
@@ -161,6 +169,14 @@ export default function LabelPreview({ color, config, className = '' }: LabelPre
                   style={{ fontSize: `${config.typography.brandSize}px` }}
                 >
                   {color.brand}
+                </div>
+              )}
+              {config.showSheen && color.sheen && (
+                <div
+                  className="opacity-75 mt-1"
+                  style={{ fontSize: `${config.typography.detailsSize}px` }}
+                >
+                  Sheen: {color.sheen === 'semiGloss' ? 'Semi-Gloss' : color.sheen.charAt(0).toUpperCase() + color.sheen.slice(1)}
                 </div>
               )}
             </div>
@@ -187,14 +203,6 @@ export default function LabelPreview({ color, config, className = '' }: LabelPre
                   style={{ fontSize: `${config.typography.detailsSize}px` }}
                 >
                   RGB: {color.rgb.join(', ')}
-                </div>
-              )}
-              {config.showSheen && color.sheen && (
-                <div
-                  className="opacity-75 mt-1"
-                  style={{ fontSize: `${config.typography.detailsSize}px` }}
-                >
-                  Sheen: {color.sheen === 'semiGloss' ? 'Semi-Gloss' : color.sheen.charAt(0).toUpperCase() + color.sheen.slice(1)}
                 </div>
               )}
             </div>
