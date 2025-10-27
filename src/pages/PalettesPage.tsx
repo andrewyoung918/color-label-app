@@ -26,37 +26,37 @@ export default function PalettesPage() {
   return (
     <div className="space-y-6">
       {/* Palettes Header */}
-      <div className="bg-white rounded-lg shadow-sm p-6">
-        <div className="flex items-center justify-between">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
               Color Palettes
             </h1>
-            <p className="text-gray-600">
+            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300">
               Organize your colors into beautiful palettes
             </p>
           </div>
           <button
             onClick={handleNewPalette}
-            className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors flex items-center gap-2"
+            className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors flex items-center justify-center gap-2 text-sm sm:text-base whitespace-nowrap"
           >
-            <Plus className="w-5 h-5" />
+            <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
             New Palette
           </button>
         </div>
       </div>
 
       {/* Palette Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {palettes.length > 0 ? (
           palettes.map((palette) => (
             <div
               key={palette.id}
-              className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow cursor-pointer group"
+              className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow cursor-pointer group"
               onClick={() => navigate(`/palettes/${palette.id}`)}
             >
               {/* Color Preview */}
-              <div className="h-24 flex">
+              <div className="h-20 sm:h-24 flex">
                 {palette.colors.length > 0 ? (
                   palette.colors.slice(0, 6).map((color) => (
                     <div
@@ -74,14 +74,14 @@ export default function PalettesPage() {
               </div>
 
               {/* Palette Info */}
-              <div className="p-4">
+              <div className="p-3 sm:p-4">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <h3 className="font-semibold text-gray-900">{palette.name}</h3>
-                    <p className="text-sm text-gray-600 mt-1">
+                    <h3 className="font-semibold text-sm sm:text-base text-gray-900 dark:text-white truncate">{palette.name}</h3>
+                    <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1">
                       {palette.colors.length} color{palette.colors.length !== 1 ? 's' : ''}
                     </p>
-                    <p className="text-xs text-gray-500 mt-2">
+                    <p className="text-xs text-gray-500 dark:text-gray-500 mt-1 sm:mt-2">
                       Created {format(new Date(palette.createdAt), 'MMM d, yyyy')}
                     </p>
                   </div>
@@ -101,9 +101,9 @@ export default function PalettesPage() {
             </div>
           ))
         ) : (
-          <div className="col-span-full flex flex-col items-center justify-center py-12 bg-white rounded-lg shadow-sm">
-            <div className="text-gray-400 mb-4">
-              <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="col-span-full flex flex-col items-center justify-center py-12 bg-white dark:bg-gray-800 rounded-lg shadow-sm px-4">
+            <div className="text-gray-400 dark:text-gray-500 mb-4">
+              <svg className="w-12 h-12 sm:w-16 sm:h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -112,13 +112,13 @@ export default function PalettesPage() {
                 />
               </svg>
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-1">No palettes yet</h3>
-            <p className="text-gray-600 text-center max-w-sm">
+            <h3 className="text-base sm:text-lg font-medium text-gray-900 dark:text-white mb-1">No palettes yet</h3>
+            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 text-center max-w-sm">
               Create your first palette by selecting colors from your library
             </p>
             <button
               onClick={handleNewPalette}
-              className="mt-4 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+              className="mt-4 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors text-sm sm:text-base"
             >
               Go to Library
             </button>

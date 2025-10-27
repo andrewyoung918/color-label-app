@@ -27,8 +27,8 @@ function App() {
 
   return (
     <HashRouter>
-      <div className="min-h-screen bg-gradient-to-br from-primary-50 via-rose-50 to-sky-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-300">
-        <header className="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg shadow-sm border-b border-primary-200/50 dark:border-gray-700">
+      <div className="min-h-screen bg-white dark:bg-gradient-to-br dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-300">
+        <header className="sticky top-0 z-50 bg-gradient-to-r from-white via-primary-50/30 to-rose-50/30 dark:from-gray-900 dark:via-primary-900/20 dark:to-gray-900 backdrop-blur-lg shadow-sm border-b border-primary-200/50 dark:border-gray-700">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">
               {/* Logo */}
@@ -38,7 +38,7 @@ function App() {
                 </div>
                 <div>
                   <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-primary-600 to-rose-600 dark:from-primary-400 dark:to-rose-400 bg-clip-text text-transparent">
-                    Shades of Hue
+                    Shades of Bug
                   </h1>
                   <p className="text-xs text-gray-600 dark:text-gray-400 hidden sm:block">
                     Paint Organization Made Beautiful

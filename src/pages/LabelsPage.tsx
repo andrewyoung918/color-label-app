@@ -47,13 +47,13 @@ export default function LabelsPage() {
   return (
     <div className="space-y-6">
       {/* Labels Header */}
-      <div className="bg-white rounded-lg shadow-sm p-6">
-        <div className="flex items-center justify-between">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
               Label Designer
             </h1>
-            <p className="text-gray-600">
+            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300">
               Create printable labels for your paint colors
             </p>
           </div>
@@ -61,21 +61,21 @@ export default function LabelsPage() {
             <button
               onClick={handleExport}
               disabled={previewColors.length === 0}
-              className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base whitespace-nowrap"
             >
-              <Download className="w-5 h-5" />
+              <Download className="w-4 h-4 sm:w-5 sm:h-5" />
               Export
             </button>
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         {/* Label Settings */}
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
           {/* Basic Settings */}
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Label Settings</h2>
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 sm:p-6">
+            <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-4">Label Settings</h2>
 
             <div className="space-y-4">
               {/* Layout Selection */}
@@ -216,15 +216,15 @@ export default function LabelsPage() {
           </div>
 
           {/* Typography Controls */}
-          <div className="bg-white rounded-lg shadow-sm p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 sm:p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                <Type className="w-5 h-5" />
+              <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                <Type className="w-4 h-4 sm:w-5 sm:h-5" />
                 Typography
               </h2>
               <button
                 onClick={() => setShowAdvanced(!showAdvanced)}
-                className="text-sm text-primary-600 hover:text-primary-700"
+                className="text-xs sm:text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300"
               >
                 {showAdvanced ? 'Hide' : 'Show'} Advanced
               </button>
@@ -428,8 +428,8 @@ export default function LabelsPage() {
 
           {/* Sheen Selection */}
           {config.showSheen && previewColors.length > 0 && (
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Sheen/Finish Selection</h2>
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 sm:p-6">
+              <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-4">Sheen/Finish Selection</h2>
               <div className="space-y-4">
                 {previewColors.map((color) => (
                   <div key={color.id} className="flex items-center gap-3 pb-3 border-b border-gray-100 last:border-0">
@@ -463,18 +463,18 @@ export default function LabelsPage() {
         </div>
 
         {/* Label Preview */}
-        <div className="bg-white rounded-lg shadow-sm p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 sm:p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">Preview</h2>
-            <button className="text-primary-600 hover:text-primary-700 flex items-center gap-1">
+            <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">Preview</h2>
+            <button className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 flex items-center gap-1">
               <Eye className="w-4 h-4" />
-              <span className="text-sm">Full Preview</span>
+              <span className="text-xs sm:text-sm">Full Preview</span>
             </button>
           </div>
 
-          <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 min-h-[400px] flex items-center justify-center overflow-auto">
+          <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-4 sm:p-8 min-h-[300px] sm:min-h-[400px] flex items-center justify-center overflow-auto">
             {previewColors.length > 0 ? (
-              <div ref={previewRef} className="flex flex-wrap gap-4 justify-center">
+              <div ref={previewRef} className="flex flex-wrap gap-3 sm:gap-4 justify-center">
                 {previewColors.map((color) => (
                   <div
                     key={color.id}
@@ -489,12 +489,12 @@ export default function LabelsPage() {
                 ))}
               </div>
             ) : (
-              <div className="text-center text-gray-500">
-                <p className="mb-2">No colors selected</p>
-                <p className="text-sm">Select colors from your library to create labels</p>
+              <div className="text-center text-gray-500 dark:text-gray-400">
+                <p className="mb-2 text-sm sm:text-base">No colors selected</p>
+                <p className="text-xs sm:text-sm">Select colors from your library to create labels</p>
                 <button
                   onClick={handleSelectColors}
-                  className="mt-4 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors flex items-center gap-2 mx-auto"
+                  className="mt-4 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors flex items-center gap-2 mx-auto text-sm sm:text-base"
                 >
                   <Plus className="w-4 h-4" />
                   Select Colors

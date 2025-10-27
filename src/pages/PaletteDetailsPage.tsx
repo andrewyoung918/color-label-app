@@ -122,55 +122,55 @@ export default function PaletteDetailsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white rounded-lg shadow-sm p-6">
-        <div className="flex items-center justify-between mb-4">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-3">
           <button
             onClick={() => navigate('/palettes')}
-            className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
+            className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition-colors text-sm sm:text-base"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
             Back to Palettes
           </button>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <button
               onClick={copyColorList}
-              className="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors flex items-center gap-2"
+              className="px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors flex items-center gap-2 text-sm"
             >
               <Copy className="w-4 h-4" />
-              Copy List
+              <span className="hidden sm:inline">Copy List</span>
             </button>
             <button
               onClick={handleExportPDF}
-              className="px-3 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors flex items-center gap-2"
+              className="px-3 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors flex items-center gap-2 text-sm"
             >
               <FileText className="w-4 h-4" />
-              Export PDF
+              <span className="hidden sm:inline">Export </span><span>PDF</span>
             </button>
             <button
               onClick={handleDelete}
-              className="px-3 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors flex items-center gap-2"
+              className="px-3 py-2 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded-lg hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors flex items-center gap-2 text-sm"
             >
               <Trash2 className="w-4 h-4" />
-              Delete
+              <span className="hidden sm:inline">Delete</span>
             </button>
           </div>
         </div>
 
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">{palette.name}</h1>
-          <div className="flex gap-4 mt-2 text-sm text-gray-600">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">{palette.name}</h1>
+          <div className="flex flex-wrap gap-2 sm:gap-4 mt-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
             <span>{palette.colors.length} colors</span>
-            <span>•</span>
-            <span>Created {format(new Date(palette.createdAt), 'MMMM d, yyyy')}</span>
-            <span>•</span>
-            <span>Updated {format(new Date(palette.updatedAt), 'MMMM d, yyyy')}</span>
+            <span className="hidden sm:inline">•</span>
+            <span>Created {format(new Date(palette.createdAt), 'MMM d, yyyy')}</span>
+            <span className="hidden sm:inline">•</span>
+            <span className="hidden sm:inline">Updated {format(new Date(palette.updatedAt), 'MMM d, yyyy')}</span>
           </div>
         </div>
       </div>
 
       {/* Color Preview Bar */}
-      <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-        <div className="h-20 flex">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
+        <div className="h-16 sm:h-20 flex">
           {palette.colors.map((color) => (
             <div
               key={color.id}
@@ -183,9 +183,9 @@ export default function PaletteDetailsPage() {
       </div>
 
       {/* Color Cards Grid */}
-      <div className="bg-white rounded-lg shadow-sm p-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">Colors in Palette</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 sm:p-6">
+        <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-4">Colors in Palette</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4">
           {palette.colors.map((color) => (
             <div key={color.id} className="space-y-2">
               <div
@@ -196,10 +196,10 @@ export default function PaletteDetailsPage() {
                   <span className="text-white font-mono text-sm">{color.hex}</span>
                 </div>
               </div>
-              <div className="px-2">
-                <h3 className="font-medium text-sm text-gray-900 truncate">{color.name}</h3>
-                <p className="text-xs text-gray-600">{color.brand}</p>
-                {color.code && <p className="text-xs text-gray-500">{color.code}</p>}
+              <div className="px-1 sm:px-2">
+                <h3 className="font-medium text-xs sm:text-sm text-gray-900 dark:text-white truncate">{color.name}</h3>
+                <p className="text-xs text-gray-600 dark:text-gray-400 truncate">{color.brand}</p>
+                {color.code && <p className="text-xs text-gray-500 dark:text-gray-500 truncate">{color.code}</p>}
               </div>
             </div>
           ))}
@@ -207,26 +207,26 @@ export default function PaletteDetailsPage() {
       </div>
 
       {/* Color Details List */}
-      <div className="bg-white rounded-lg shadow-sm p-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">Color Details</h2>
-        <div className="space-y-3">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 sm:p-6">
+        <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-4">Color Details</h2>
+        <div className="space-y-2 sm:space-y-3">
           {palette.colors.map((color, index) => (
             <div
               key={color.id}
-              className="flex items-center gap-4 p-3 rounded-lg hover:bg-gray-50 transition-colors"
+              className="flex items-center gap-2 sm:gap-4 p-2 sm:p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
             >
-              <div className="text-sm text-gray-500 w-8">{index + 1}</div>
+              <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-500 w-6 sm:w-8 flex-shrink-0">{index + 1}</div>
               <div
-                className="w-12 h-12 rounded-lg border border-gray-300 flex-shrink-0"
+                className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg border border-gray-300 dark:border-gray-600 flex-shrink-0"
                 style={{ backgroundColor: color.hex }}
               />
-              <div className="flex-1">
-                <div className="font-medium text-gray-900">{color.name}</div>
-                <div className="text-sm text-gray-600">
+              <div className="flex-1 min-w-0">
+                <div className="font-medium text-sm sm:text-base text-gray-900 dark:text-white truncate">{color.name}</div>
+                <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 truncate">
                   {color.brand} • {color.code || 'No code'} • {color.hex.toUpperCase()}
                 </div>
               </div>
-              <div className="text-sm font-mono text-gray-500">
+              <div className="hidden md:block text-xs sm:text-sm font-mono text-gray-500 dark:text-gray-500 flex-shrink-0">
                 RGB({color.rgb.join(', ')})
               </div>
             </div>
