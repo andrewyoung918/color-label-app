@@ -3,15 +3,26 @@ import { hexToRgb, generateColorId } from './colors'
 
 // Import color data from colornerd JSON files
 import sherwinWilliamsData from 'colornerd/json/sherwin-williams.json'
-import benjaminMooreData from 'colornerd/json/benjamin-moore.json'
 import behrData from 'colornerd/json/behr.json'
 import valsparData from 'colornerd/json/valspar.json'
 import ppgData from 'colornerd/json/ppg.json'
+
+// Import Benjamin Moore data from local file (better data with full names)
+import benjaminMooreData from '@/data/benjamin-moore.json'
 
 interface ColorNerdEntry {
   name: string
   label: number | string
   hex: string
+}
+
+interface BenjaminMooreEntry {
+  number: string
+  name: string
+  family: string
+  hex: string
+  exteriorAvailability: string
+  [key: string]: any
 }
 
 // Convert colornerd data to our Color format
@@ -39,6 +50,27 @@ function convertColorData(
   })
 }
 
+// Convert Benjamin Moore data to our Color format
+function convertBenjaminMooreData(data: BenjaminMooreEntry[]): Color[] {
+  return data.map((entry) => {
+    const hex = entry.hex.startsWith('#') ? entry.hex : `#${entry.hex}`
+    const rgb = hexToRgb(hex)
+
+    return {
+      id: generateColorId({
+        brand: 'Benjamin Moore',
+        name: entry.name,
+        hex
+      }),
+      name: entry.name,
+      brand: 'Benjamin Moore',
+      hex,
+      rgb,
+      code: entry.number // Use the color number as the code
+    }
+  })
+}
+
 // Load all colors from available brands
 export function getAllColors(): Color[] {
   const allColors: Color[] = []
@@ -52,13 +84,9 @@ export function getAllColors(): Color[] {
     )
   )
 
-  // Benjamin Moore
+  // Benjamin Moore - use local data with full color names
   allColors.push(
-    ...convertColorData(
-      benjaminMooreData as ColorNerdEntry[],
-      'Benjamin Moore',
-      'BM'
-    )
+    ...convertBenjaminMooreData(benjaminMooreData as BenjaminMooreEntry[])
   )
 
   // Behr
