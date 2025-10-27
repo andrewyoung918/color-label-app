@@ -19,7 +19,7 @@ export default function BrowsePage() {
   const [selectedLightness, setSelectedLightness] = useState<Set<Lightness>>(new Set())
   const [selectedSaturations, setSelectedSaturations] = useState<Set<Saturation>>(new Set())
   const [displayCount, setDisplayCount] = useState(ITEMS_PER_PAGE)
-  const [showFilters, setShowFilters] = useState(true)
+  const [showFilters, setShowFilters] = useState(false)
   const { library, addToLibrary } = useColorStore()
   const loadMoreRef = useRef<HTMLDivElement>(null)
 

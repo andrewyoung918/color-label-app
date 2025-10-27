@@ -1,16 +1,21 @@
 import { useParams, useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { usePaletteStore } from '@/stores/usePaletteStore'
-import { ArrowLeft, Trash2, Copy, FileText } from 'lucide-react'
+import { useColorStore } from '@/stores/useColorStore'
+import { ArrowLeft, Trash2, Copy, FileText, Pencil, Check, X, Plus } from 'lucide-react'
 import { format } from 'date-fns'
 import jsPDF from 'jspdf'
-import { Palette } from '@/types'
+import { Palette, Color } from '@/types'
 
 export default function PaletteDetailsPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const { palettes, deletePalette } = usePaletteStore()
+  const { palettes, deletePalette, updatePalette, removeColorFromPalette, addColorToPalette } = usePaletteStore()
+  const { library } = useColorStore()
   const [palette, setPalette] = useState<Palette | null>(null)
+  const [isEditingName, setIsEditingName] = useState(false)
+  const [editedName, setEditedName] = useState('')
+  const [showAddColorModal, setShowAddColorModal] = useState(false)
 
   useEffect(() => {
     const foundPalette = palettes.find(p => p.id === id)
@@ -119,6 +124,42 @@ export default function PaletteDetailsPage() {
     alert('Color list copied to clipboard!')
   }
 
+  const handleStartEditName = () => {
+    if (palette) {
+      setEditedName(palette.name)
+      setIsEditingName(true)
+    }
+  }
+
+  const handleSaveName = () => {
+    if (palette && editedName.trim()) {
+      updatePalette(palette.id, { name: editedName.trim() })
+      setIsEditingName(false)
+    }
+  }
+
+  const handleCancelEditName = () => {
+    setIsEditingName(false)
+    setEditedName('')
+  }
+
+  const handleRemoveColor = (colorId: string) => {
+    if (palette && confirm('Remove this color from the palette?')) {
+      removeColorFromPalette(palette.id, colorId)
+    }
+  }
+
+  const handleAddColor = (color: Color) => {
+    if (palette) {
+      addColorToPalette(palette.id, color)
+    }
+  }
+
+  // Get colors from library that aren't already in the palette
+  const availableColors = library.filter(
+    color => !palette?.colors.some(c => c.id === color.id)
+  )
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -157,7 +198,46 @@ export default function PaletteDetailsPage() {
         </div>
 
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">{palette.name}</h1>
+          {isEditingName ? (
+            <div className="flex items-center gap-2">
+              <input
+                type="text"
+                value={editedName}
+                onChange={(e) => setEditedName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') handleSaveName()
+                  if (e.key === 'Escape') handleCancelEditName()
+                }}
+                className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white bg-white dark:bg-gray-700 border-2 border-primary-500 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                autoFocus
+              />
+              <button
+                onClick={handleSaveName}
+                className="p-2 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/30 rounded-lg transition-colors"
+                title="Save name"
+              >
+                <Check className="w-5 h-5" />
+              </button>
+              <button
+                onClick={handleCancelEditName}
+                className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
+                title="Cancel"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2 group">
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">{palette.name}</h1>
+              <button
+                onClick={handleStartEditName}
+                className="p-1.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+                title="Edit name"
+              >
+                <Pencil className="w-4 h-4" />
+              </button>
+            </div>
+          )}
           <div className="flex flex-wrap gap-2 sm:gap-4 mt-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
             <span>{palette.colors.length} colors</span>
             <span className="hidden sm:inline">•</span>
@@ -184,7 +264,16 @@ export default function PaletteDetailsPage() {
 
       {/* Color Cards Grid */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 sm:p-6">
-        <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-4">Colors in Palette</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">Colors in Palette</h2>
+          <button
+            onClick={() => setShowAddColorModal(true)}
+            className="px-3 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors flex items-center gap-2 text-sm"
+          >
+            <Plus className="w-4 h-4" />
+            Add Colors
+          </button>
+        </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4">
           {palette.colors.map((color) => (
             <div key={color.id} className="space-y-2">
@@ -195,6 +284,13 @@ export default function PaletteDetailsPage() {
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black bg-opacity-50 rounded-lg">
                   <span className="text-white font-mono text-sm">{color.hex}</span>
                 </div>
+                <button
+                  onClick={() => handleRemoveColor(color.id)}
+                  className="absolute top-1 right-1 p-1.5 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors opacity-0 group-hover:opacity-100"
+                  title="Remove from palette"
+                >
+                  <X className="w-3 h-3" />
+                </button>
               </div>
               <div className="px-1 sm:px-2">
                 <h3 className="font-medium text-xs sm:text-sm text-gray-900 dark:text-white truncate">{color.name}</h3>
@@ -213,7 +309,7 @@ export default function PaletteDetailsPage() {
           {palette.colors.map((color, index) => (
             <div
               key={color.id}
-              className="flex items-center gap-2 sm:gap-4 p-2 sm:p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+              className="flex items-center gap-2 sm:gap-4 p-2 sm:p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors group"
             >
               <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-500 w-6 sm:w-8 flex-shrink-0">{index + 1}</div>
               <div
@@ -229,10 +325,87 @@ export default function PaletteDetailsPage() {
               <div className="hidden md:block text-xs sm:text-sm font-mono text-gray-500 dark:text-gray-500 flex-shrink-0">
                 RGB({color.rgb.join(', ')})
               </div>
+              <button
+                onClick={() => handleRemoveColor(color.id)}
+                className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors opacity-0 group-hover:opacity-100 flex-shrink-0"
+                title="Remove from palette"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
             </div>
           ))}
         </div>
       </div>
+
+      {/* Add Colors Modal */}
+      {showAddColorModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[80vh] overflow-hidden flex flex-col">
+            <div className="p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Add Colors to Palette</h2>
+              <button
+                onClick={() => setShowAddColorModal(false)}
+                className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-4 sm:p-6 overflow-y-auto flex-1">
+              {availableColors.length > 0 ? (
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
+                  {availableColors.map((color) => (
+                    <div key={color.id} className="space-y-2">
+                      <div
+                        className="aspect-square rounded-lg shadow-md border border-gray-200 relative group cursor-pointer"
+                        style={{ backgroundColor: color.hex }}
+                        onClick={() => {
+                          handleAddColor(color)
+                        }}
+                      >
+                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black bg-opacity-50 rounded-lg">
+                          <Plus className="w-8 h-8 text-white" />
+                        </div>
+                      </div>
+                      <div className="px-1 sm:px-2">
+                        <h3 className="font-medium text-xs sm:text-sm text-gray-900 dark:text-white truncate">{color.name}</h3>
+                        <p className="text-xs text-gray-600 dark:text-gray-400 truncate">{color.brand}</p>
+                        {color.code && <p className="text-xs text-gray-500 dark:text-gray-500 truncate">{color.code}</p>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-12">
+                  <div className="text-gray-400 dark:text-gray-500 mb-4">
+                    <svg className="w-12 h-12 sm:w-16 sm:h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.5}
+                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                      />
+                    </svg>
+                  </div>
+                  <h3 className="text-base sm:text-lg font-medium text-gray-900 dark:text-white mb-1">All library colors added</h3>
+                  <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 text-center max-w-sm">
+                    All colors from your library are already in this palette. Add more colors to your library to continue building this palette.
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <div className="p-4 sm:p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end">
+              <button
+                onClick={() => setShowAddColorModal(false)}
+                className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+              >
+                Done
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
