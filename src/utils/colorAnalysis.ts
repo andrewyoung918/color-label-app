@@ -73,7 +73,7 @@ export function getSaturationCategory(color: Color): 'muted' | 'moderate' | 'vib
 }
 
 // Check if color is suitable for exteriors (if data available)
-export function isExteriorSuitable(color: Color): boolean {
+export function isExteriorSuitable(_color: Color): boolean {
   // This would come from the color data if available
   // For now, return true for all
   return true

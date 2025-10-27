@@ -4,7 +4,6 @@ import { groupColorsByFamily, getColorFamilyDisplayName, getColorFamilyHex, Colo
 import { getColorTemperature, getLightnessCategory, getSaturationCategory } from '@/utils/colorAnalysis'
 import { useColorStore } from '@/stores/useColorStore'
 import ColorGrid from '@/components/ColorGrid'
-import { Color } from '@/types'
 
 const ITEMS_PER_PAGE = 100
 
