@@ -17,26 +17,26 @@ interface LabelStore {
 }
 
 const defaultConfig: LabelConfig = {
-  layout: 'default',
+  layout: 'detailed',
   showBrand: true,
   showCode: true,
   showRgb: false,
-  showHex: false,
-  showSheen: false,
+  showHex: true,
+  showSheen: true,
   dimensions: {
-    width: 3,
-    height: 2
+    width: 6,
+    height: 4
   },
   backgroundColor: 'color',
   textColor: 'auto',
   typography: {
-    nameSize: 24,
-    brandSize: 14,
-    codeSize: 12,
-    detailsSize: 11,
-    fontFamily: 'sans',
+    nameSize: 60,
+    brandSize: 45,
+    codeSize: 25,
+    detailsSize: 25,
+    fontFamily: 'mono',
     fontWeight: 'normal',
-    alignment: 'center',
+    alignment: 'left',
     lineHeight: 'normal'
   }
 }

@@ -6,7 +6,7 @@ export interface Color {
   rgb: [number, number, number]
   code?: string // Brand-specific code
   customName?: string // User's custom name for the color
-  sheen?: 'flat' | 'eggshell' | 'satin' | 'semiGloss' | 'gloss' // Paint sheen/finish
+  sheen?: 'flat' | 'matte' | 'eggshell' | 'satin' | 'semiGloss' | 'gloss' // Paint sheen/finish
   addedAt?: Date
   inventory?: PaintInventory
 }
@@ -14,6 +14,7 @@ export interface Color {
 export interface PaintInventory {
   sheens: {
     flat?: PaintCan[]
+    matte?: PaintCan[]
     eggshell?: PaintCan[]
     satin?: PaintCan[]
     semiGloss?: PaintCan[]

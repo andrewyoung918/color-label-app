@@ -10,7 +10,8 @@ interface PaintInventoryProps {
 }
 
 const SHEENS = [
-  { key: 'flat', label: 'Flat/Matte' },
+  { key: 'flat', label: 'Flat' },
+  { key: 'matte', label: 'Matte' },
   { key: 'eggshell', label: 'Eggshell' },
   { key: 'satin', label: 'Satin' },
   { key: 'semiGloss', label: 'Semi-Gloss' },

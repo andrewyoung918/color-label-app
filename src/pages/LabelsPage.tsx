@@ -6,7 +6,8 @@ import { useNavigate } from 'react-router-dom'
 import LabelPreview from '@/components/LabelPreview'
 
 const SHEENS = [
-  { value: 'flat', label: 'Flat/Matte' },
+  { value: 'flat', label: 'Flat' },
+  { value: 'matte', label: 'Matte' },
   { value: 'eggshell', label: 'Eggshell' },
   { value: 'satin', label: 'Satin' },
   { value: 'semiGloss', label: 'Semi-Gloss' },
