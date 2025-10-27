@@ -1,9 +1,11 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react'
-import { SlidersHorizontal, X } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { SlidersHorizontal, X, Plus, Palette as PaletteIcon, FileText } from 'lucide-react'
 import { getAllColors } from '@/utils/colorData'
 import { groupColorsByFamily, getColorFamilyDisplayName, getColorFamilyHex, ColorFamily } from '@/utils/colorCategories'
 import { getColorTemperature, getLightnessCategory, getSaturationCategory } from '@/utils/colorAnalysis'
 import { useColorStore } from '@/stores/useColorStore'
+import { usePaletteStore } from '@/stores/usePaletteStore'
 import ColorGrid from '@/components/ColorGrid'
 
 const ITEMS_PER_PAGE = 100
@@ -13,6 +15,7 @@ type Lightness = 'light' | 'medium' | 'dark'
 type Saturation = 'muted' | 'moderate' | 'vibrant'
 
 export default function BrowsePage() {
+  const navigate = useNavigate()
   const [selectedFamilies, setSelectedFamilies] = useState<Set<ColorFamily>>(new Set())
   const [selectedBrands, setSelectedBrands] = useState<Set<string>>(new Set())
   const [selectedTemperatures, setSelectedTemperatures] = useState<Set<Temperature>>(new Set())
@@ -20,7 +23,12 @@ export default function BrowsePage() {
   const [selectedSaturations, setSelectedSaturations] = useState<Set<Saturation>>(new Set())
   const [displayCount, setDisplayCount] = useState(ITEMS_PER_PAGE)
   const [showFilters, setShowFilters] = useState(false)
+  const [selectedColors, setSelectedColors] = useState<Set<string>>(new Set())
+  const [selectionMode, setSelectionMode] = useState(false)
+  const [showPaletteModal, setShowPaletteModal] = useState(false)
+  const [paletteName, setPaletteName] = useState('')
   const { library, addToLibrary } = useColorStore()
+  const { createPalette } = usePaletteStore()
   const loadMoreRef = useRef<HTMLDivElement>(null)
 
   // Get all colors and group them
@@ -100,6 +108,58 @@ export default function BrowsePage() {
     setSelectedTemperatures(new Set())
     setSelectedLightness(new Set())
     setSelectedSaturations(new Set())
+  }
+
+  const handleColorClick = (colorId: string) => {
+    if (!selectionMode) {
+      // First click enables selection mode
+      setSelectionMode(true)
+      setSelectedColors(new Set([colorId]))
+    } else {
+      // Toggle selection
+      const newSelection = new Set(selectedColors)
+      if (newSelection.has(colorId)) {
+        newSelection.delete(colorId)
+      } else {
+        newSelection.add(colorId)
+      }
+      setSelectedColors(newSelection)
+
+      // Exit selection mode if no colors selected
+      if (newSelection.size === 0) {
+        setSelectionMode(false)
+      }
+    }
+  }
+
+  const handleCancelSelection = () => {
+    setSelectedColors(new Set())
+    setSelectionMode(false)
+  }
+
+  const handleBulkAddToLibrary = () => {
+    const colorsToAdd = allDisplayColors.filter(c => selectedColors.has(c.id))
+    colorsToAdd.forEach(color => addToLibrary(color))
+    handleCancelSelection()
+  }
+
+  const handleCreatePalette = () => {
+    const colorsForPalette = allDisplayColors.filter(c => selectedColors.has(c.id))
+    if (colorsForPalette.length > 0) {
+      if (paletteName.trim()) {
+        createPalette(paletteName.trim(), colorsForPalette)
+        setPaletteName('')
+        setShowPaletteModal(false)
+        handleCancelSelection()
+        navigate('/palettes')
+      }
+    }
+  }
+
+  const handleMakeLabel = () => {
+    // Navigate to labels page - could pass selected colors if needed
+    navigate('/labels')
+    handleCancelSelection()
   }
 
   // Get all colors to display based on selections
@@ -412,7 +472,10 @@ export default function BrowsePage() {
               <ColorGrid
                 colors={displayColors}
                 libraryColors={library}
+                selectedColors={selectedColors}
+                selectionMode={selectionMode}
                 onAddToLibrary={addToLibrary}
+                onToggleSelection={handleColorClick}
                 emptyMessage="No colors found in this category"
               />
             </div>
@@ -435,6 +498,92 @@ export default function BrowsePage() {
           </div>
         </div>
       </div>
+
+      {/* Bulk Action Bar */}
+      {selectionMode && selectedColors.size > 0 && (
+        <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t-2 border-primary-500 shadow-2xl z-50 animate-slide-up">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="text-sm sm:text-base font-semibold text-gray-900 dark:text-white">
+                  {selectedColors.size} color{selectedColors.size !== 1 ? 's' : ''} selected
+                </div>
+                <button
+                  onClick={handleCancelSelection}
+                  className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 underline"
+                >
+                  Cancel
+                </button>
+              </div>
+              <div className="flex flex-wrap items-center gap-2 justify-center sm:justify-end">
+                <button
+                  onClick={handleBulkAddToLibrary}
+                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2 text-sm font-medium"
+                >
+                  <Plus className="w-4 h-4" />
+                  Add to Library
+                </button>
+                <button
+                  onClick={() => setShowPaletteModal(true)}
+                  className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors flex items-center gap-2 text-sm font-medium"
+                >
+                  <PaletteIcon className="w-4 h-4" />
+                  Make Palette
+                </button>
+                <button
+                  onClick={handleMakeLabel}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 text-sm font-medium"
+                >
+                  <FileText className="w-4 h-4" />
+                  Make Label
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Create Palette Modal */}
+      {showPaletteModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">Create Palette</h2>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+              Creating palette with {selectedColors.size} color{selectedColors.size !== 1 ? 's' : ''}
+            </p>
+            <input
+              type="text"
+              value={paletteName}
+              onChange={(e) => setPaletteName(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && paletteName.trim()) handleCreatePalette()
+                if (e.key === 'Escape') setShowPaletteModal(false)
+              }}
+              placeholder="Enter palette name..."
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 mb-4"
+              autoFocus
+            />
+            <div className="flex gap-2 justify-end">
+              <button
+                onClick={() => {
+                  setShowPaletteModal(false)
+                  setPaletteName('')
+                }}
+                className="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleCreatePalette}
+                disabled={!paletteName.trim()}
+                className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Create Palette
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

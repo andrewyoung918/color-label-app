@@ -145,7 +145,7 @@ function App() {
         <footer className="mt-12 py-6 border-t border-primary-200/50 dark:border-gray-700 bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <p className="text-center text-sm text-gray-600 dark:text-gray-400">
-              Shades of Hue &copy; 2024 • Organize your paint colors beautifully
+              Shades of Bug &copy; 2024 • Organize your paint colors beautifully
             </p>
           </div>
         </footer>
