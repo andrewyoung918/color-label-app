@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react'
+import { SlidersHorizontal, X } from 'lucide-react'
 import { getAllColors } from '@/utils/colorData'
 import { groupColorsByFamily, getColorFamilyDisplayName, getColorFamilyHex, ColorFamily } from '@/utils/colorCategories'
 import { getColorTemperature, getLightnessCategory, getSaturationCategory } from '@/utils/colorAnalysis'
@@ -18,6 +19,7 @@ export default function BrowsePage() {
   const [selectedLightness, setSelectedLightness] = useState<Set<Lightness>>(new Set())
   const [selectedSaturations, setSelectedSaturations] = useState<Set<Saturation>>(new Set())
   const [displayCount, setDisplayCount] = useState(ITEMS_PER_PAGE)
+  const [showFilters, setShowFilters] = useState(true)
   const { library, addToLibrary } = useColorStore()
   const loadMoreRef = useRef<HTMLDivElement>(null)
 
@@ -184,26 +186,53 @@ export default function BrowsePage() {
     <div className="space-y-4 sm:space-y-6">
       {/* Browse Header */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 sm:p-6">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
-          Browse Colors
-        </h1>
-        <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300">
-          Explore our complete database of {allColors.length.toLocaleString()} paint colors organized by color family
-        </p>
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+              Browse Colors
+            </h1>
+            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300">
+              Explore our complete database of {allColors.length.toLocaleString()} paint colors
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className={`px-3 py-2 text-sm rounded-lg transition-colors flex items-center gap-2 ${
+                hasActiveFilters || showFilters
+                  ? 'bg-primary-600 text-white hover:bg-primary-700'
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+              }`}
+            >
+              <SlidersHorizontal className="w-4 h-4" />
+              <span className="hidden sm:inline">
+                {showFilters ? 'Hide' : 'Show'} Filters
+              </span>
+              {hasActiveFilters && (
+                <span className="bg-white/20 px-1.5 py-0.5 rounded text-xs font-semibold">
+                  {selectedFamilies.size + selectedBrands.size + selectedTemperatures.size + selectedLightness.size + selectedSaturations.size}
+                </span>
+              )}
+            </button>
+
+            {hasActiveFilters && (
+              <button
+                onClick={clearAllFilters}
+                className="px-3 py-2 text-sm bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded-lg hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors flex items-center gap-1"
+              >
+                <X className="w-4 h-4" />
+                <span className="hidden sm:inline">Clear</span>
+              </button>
+            )}
+          </div>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6">
+      <div className={`grid gap-4 sm:gap-6 ${showFilters ? 'grid-cols-1 lg:grid-cols-4' : 'grid-cols-1'}`}>
         {/* Filter Sidebar */}
-        <div className="lg:col-span-1 space-y-3 sm:space-y-4">
-          {/* Clear Filters Button */}
-          {hasActiveFilters && (
-            <button
-              onClick={clearAllFilters}
-              className="w-full px-3 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors text-sm font-medium"
-            >
-              Clear All Filters ({selectedFamilies.size + selectedBrands.size + selectedTemperatures.size + selectedLightness.size + selectedSaturations.size})
-            </button>
-          )}
+        {showFilters && (
+          <div className="lg:col-span-1 space-y-3 sm:space-y-4 animate-fade-in">
 
           {/* Color Families Filter */}
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-3 sm:p-4">
@@ -364,10 +393,11 @@ export default function BrowsePage() {
               </div>
             </div>
           </div>
-        </div>
+          </div>
+        )}
 
         {/* Color Grid */}
-        <div className="lg:col-span-3">
+        <div className={showFilters ? 'lg:col-span-3' : 'col-span-1'}>
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 sm:p-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-2">
               <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">
