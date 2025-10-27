@@ -5,10 +5,18 @@ import { useColorStore } from '@/stores/useColorStore'
 import { useNavigate } from 'react-router-dom'
 import LabelPreview from '@/components/LabelPreview'
 
+const SHEENS = [
+  { value: 'flat', label: 'Flat/Matte' },
+  { value: 'eggshell', label: 'Eggshell' },
+  { value: 'satin', label: 'Satin' },
+  { value: 'semiGloss', label: 'Semi-Gloss' },
+  { value: 'gloss', label: 'Gloss' }
+] as const
+
 export default function LabelsPage() {
   const navigate = useNavigate()
   const previewRef = useRef<HTMLDivElement>(null)
-  const { config, previewColors, updateConfig, exportLabels } = useLabelStore()
+  const { config, previewColors, updateConfig, updateColorSheen, exportLabels } = useLabelStore()
   const { loadLibraryFromStorage } = useColorStore()
   const [showAdvanced, setShowAdvanced] = useState(false)
 
@@ -192,6 +200,15 @@ export default function LabelsPage() {
                     />
                     <span className="text-sm text-gray-700">Show RGB Values</span>
                   </label>
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={config.showSheen}
+                      onChange={(e) => updateConfig({ showSheen: e.target.checked })}
+                      className="mr-2 rounded text-primary-600 focus:ring-primary-500"
+                    />
+                    <span className="text-sm text-gray-700">Show Sheen/Finish</span>
+                  </label>
                 </div>
               </div>
             </div>
@@ -367,6 +384,41 @@ export default function LabelsPage() {
               )}
             </div>
           </div>
+
+          {/* Sheen Selection */}
+          {config.showSheen && previewColors.length > 0 && (
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">Sheen/Finish Selection</h2>
+              <div className="space-y-4">
+                {previewColors.map((color) => (
+                  <div key={color.id} className="flex items-center gap-3 pb-3 border-b border-gray-100 last:border-0">
+                    <div
+                      className="w-10 h-10 rounded border-2 border-gray-300 flex-shrink-0"
+                      style={{ backgroundColor: color.hex }}
+                    />
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium text-sm text-gray-900 truncate">
+                        {color.customName || color.name}
+                      </div>
+                      <div className="text-xs text-gray-600">{color.brand}</div>
+                    </div>
+                    <select
+                      value={color.sheen || ''}
+                      onChange={(e) => updateColorSheen(color.id, e.target.value as any || undefined)}
+                      className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm"
+                    >
+                      <option value="">None</option>
+                      {SHEENS.map(sheen => (
+                        <option key={sheen.value} value={sheen.value}>
+                          {sheen.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Label Preview */}
@@ -383,11 +435,16 @@ export default function LabelsPage() {
             {previewColors.length > 0 ? (
               <div ref={previewRef} className="flex flex-wrap gap-4 justify-center">
                 {previewColors.map((color) => (
-                  <LabelPreview
+                  <div
                     key={color.id}
-                    color={color}
-                    config={config}
-                  />
+                    tabIndex={0}
+                    className="focus:outline-none focus:ring-4 focus:ring-primary-500 focus:ring-offset-2 rounded-lg transition-all"
+                  >
+                    <LabelPreview
+                      color={color}
+                      config={config}
+                    />
+                  </div>
                 ))}
               </div>
             ) : (

@@ -1,11 +1,12 @@
 import { useState } from 'react'
 import { Color, PaintInventory as PaintInventoryType, PaintCan } from '@/types'
-import { Plus, Minus, X, Package } from 'lucide-react'
+import { Plus, Minus, X, Package, Printer } from 'lucide-react'
 
 interface PaintInventoryProps {
   color: Color
   onUpdateInventory: (colorId: string, inventory: PaintInventoryType) => void
   onClose?: () => void
+  onPrintLabel?: () => void
 }
 
 const SHEENS = [
@@ -23,7 +24,7 @@ const SIZES = [
   { key: '5-gallon', label: '5 Gallon' }
 ] as const
 
-export default function PaintInventory({ color, onUpdateInventory, onClose }: PaintInventoryProps) {
+export default function PaintInventory({ color, onUpdateInventory, onClose, onPrintLabel }: PaintInventoryProps) {
   const [inventory, setInventory] = useState<PaintInventoryType>(
     color.inventory || { sheens: {} }
   )
@@ -184,6 +185,19 @@ export default function PaintInventory({ color, onUpdateInventory, onClose }: Pa
               })}
             </div>
           </div>
+
+          {/* Print Label Button */}
+          {onPrintLabel && (
+            <div className="mt-4">
+              <button
+                onClick={onPrintLabel}
+                className="w-full px-4 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors flex items-center justify-center gap-2 font-medium"
+              >
+                <Printer className="w-5 h-5" />
+                Print Label
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

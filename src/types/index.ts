@@ -6,6 +6,7 @@ export interface Color {
   rgb: [number, number, number]
   code?: string // Brand-specific code
   customName?: string // User's custom name for the color
+  sheen?: 'flat' | 'eggshell' | 'satin' | 'semiGloss' | 'gloss' // Paint sheen/finish
   addedAt?: Date
   inventory?: PaintInventory
 }
@@ -40,6 +41,7 @@ export interface LabelConfig {
   showCode: boolean
   showRgb: boolean
   showHex: boolean
+  showSheen: boolean
   dimensions: {
     width: number
     height: number

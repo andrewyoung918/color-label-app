@@ -11,6 +11,7 @@ interface LabelStore {
   // Actions
   updateConfig: (updates: Partial<LabelConfig>) => void
   setPreviewColors: (colors: Color[]) => void
+  updateColorSheen: (colorId: string, sheen: Color['sheen']) => void
   exportLabels: (format: 'png' | 'pdf', elementRef: HTMLElement) => Promise<void>
   resetConfig: () => void
 }
@@ -21,6 +22,7 @@ const defaultConfig: LabelConfig = {
   showCode: true,
   showRgb: false,
   showHex: false,
+  showSheen: false,
   dimensions: {
     width: 3,
     height: 2
@@ -54,6 +56,15 @@ export const useLabelStore = create<LabelStore>((set, get) => ({
   // Set colors for preview
   setPreviewColors: (colors: Color[]) => {
     set({ previewColors: colors })
+  },
+
+  // Update sheen for a specific color in preview
+  updateColorSheen: (colorId: string, sheen: Color['sheen']) => {
+    const { previewColors } = get()
+    const updatedColors = previewColors.map(color =>
+      color.id === colorId ? { ...color, sheen } : color
+    )
+    set({ previewColors: updatedColors })
   },
 
   // Export labels as individual images

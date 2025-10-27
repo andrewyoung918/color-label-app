@@ -115,6 +115,13 @@ export default function LibraryPage() {
     }
   }
 
+  // Handle print label from inventory
+  const handlePrintLabel = (color: Color) => {
+    setPreviewColors([color])
+    setInventoryColor(null)
+    navigate('/labels')
+  }
+
   // Handle edit name
   const handleEditName = (e: React.MouseEvent, color: Color) => {
     e.stopPropagation()
@@ -273,6 +280,7 @@ export default function LibraryPage() {
           color={inventoryColor}
           onUpdateInventory={handleUpdateInventory}
           onClose={() => setInventoryColor(null)}
+          onPrintLabel={() => handlePrintLabel(inventoryColor)}
         />
       )}
 
