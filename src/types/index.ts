@@ -61,6 +61,13 @@ export interface LabelConfig {
     alignment: 'left' | 'center' | 'right'
     lineHeight: 'tight' | 'normal' | 'loose'
   }
+  exportLayout?: {
+    mode: 'individual' | 'grid' | 'sheet'
+    columns?: number
+    rows?: number
+    spacing?: number // in pixels
+    sheetTemplate?: 'avery-5160' | 'avery-5163' | 'avery-5167' | 'custom'
+  }
 }
 
 export interface SearchResult {

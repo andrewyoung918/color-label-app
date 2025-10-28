@@ -39,6 +39,12 @@ const defaultConfig: LabelConfig = {
     fontWeight: 'normal',
     alignment: 'left',
     lineHeight: 'normal'
+  },
+  exportLayout: {
+    mode: 'grid',
+    columns: 2,
+    rows: 5,
+    spacing: 24
   }
 }
 
@@ -102,14 +108,16 @@ export const useLabelStore = create<LabelStore>((set, get) => ({
     set({ previewColors: updatedColors })
   },
 
-  // Export labels as individual images
+  // Export labels as individual images or grid
   exportLabels: async (format: 'png' | 'pdf', elementRef: HTMLElement) => {
     set({ exportLoading: true })
 
     try {
+      const { config } = get()
+      const exportLayout = config.exportLayout || { mode: 'individual' }
+
       if (format === 'png') {
-        // Find all label elements (children of the container)
-        const labelElements = elementRef.querySelectorAll(':scope > div')
+        const labelElements = Array.from(elementRef.querySelectorAll(':scope > div')) as HTMLElement[]
 
         if (labelElements.length === 0) {
           console.error('No labels found to export')
@@ -117,35 +125,100 @@ export const useLabelStore = create<LabelStore>((set, get) => ({
           return
         }
 
-        // Export each label individually
-        for (let i = 0; i < labelElements.length; i++) {
-          const labelElement = labelElements[i] as HTMLElement
-          const canvas = await html2canvas(labelElement, {
-            scale: 3, // High quality for printing
-            backgroundColor: null, // Transparent background
-            logging: false
-          })
+        if (exportLayout.mode === 'individual') {
+          // Export each label individually (original behavior)
+          for (let i = 0; i < labelElements.length; i++) {
+            const labelElement = labelElements[i]
+            const canvas = await html2canvas(labelElement, {
+              scale: 3,
+              backgroundColor: null,
+              logging: false
+            })
 
-          // Convert to blob and download
-          await new Promise<void>((resolve) => {
-            canvas.toBlob((blob) => {
-              if (blob) {
-                const url = URL.createObjectURL(blob)
-                const a = document.createElement('a')
-                a.href = url
-                a.download = `label-${i + 1}-${Date.now()}.png`
-                document.body.appendChild(a)
-                a.click()
-                document.body.removeChild(a)
-                URL.revokeObjectURL(url)
-              }
-              // Small delay between downloads to avoid browser blocking
-              setTimeout(() => resolve(), 100)
-            }, 'image/png')
-          })
+            await new Promise<void>((resolve) => {
+              canvas.toBlob((blob) => {
+                if (blob) {
+                  const url = URL.createObjectURL(blob)
+                  const a = document.createElement('a')
+                  a.href = url
+                  a.download = `label-${i + 1}-${Date.now()}.png`
+                  document.body.appendChild(a)
+                  a.click()
+                  document.body.removeChild(a)
+                  URL.revokeObjectURL(url)
+                }
+                setTimeout(() => resolve(), 100)
+              }, 'image/png')
+            })
+          }
+        } else if (exportLayout.mode === 'grid') {
+          // Export as grid layout - multiple labels per page
+          const columns = exportLayout.columns || 2
+          const rows = exportLayout.rows || 5
+          const spacing = exportLayout.spacing || 24
+          const labelsPerPage = columns * rows
+
+          // Capture each label first
+          const labelCanvases = await Promise.all(
+            labelElements.map(el => html2canvas(el, {
+              scale: 3,
+              backgroundColor: null,
+              logging: false
+            }))
+          )
+
+          // Create pages
+          const numPages = Math.ceil(labelCanvases.length / labelsPerPage)
+
+          for (let page = 0; page < numPages; page++) {
+            const startIdx = page * labelsPerPage
+            const endIdx = Math.min(startIdx + labelsPerPage, labelCanvases.length)
+            const pageLabels = labelCanvases.slice(startIdx, endIdx)
+
+            // Calculate canvas size
+            const labelWidth = pageLabels[0].width
+            const labelHeight = pageLabels[0].height
+            const pageWidth = columns * labelWidth + (columns - 1) * spacing
+            const pageHeight = rows * labelHeight + (rows - 1) * spacing
+
+            // Create composite canvas
+            const compositeCanvas = document.createElement('canvas')
+            compositeCanvas.width = pageWidth
+            compositeCanvas.height = pageHeight
+            const ctx = compositeCanvas.getContext('2d')!
+
+            // Fill with white background
+            ctx.fillStyle = 'white'
+            ctx.fillRect(0, 0, pageWidth, pageHeight)
+
+            // Draw labels in grid
+            pageLabels.forEach((labelCanvas, idx) => {
+              const col = idx % columns
+              const row = Math.floor(idx / columns)
+              const x = col * (labelWidth + spacing)
+              const y = row * (labelHeight + spacing)
+              ctx.drawImage(labelCanvas, x, y)
+            })
+
+            // Download the page
+            await new Promise<void>((resolve) => {
+              compositeCanvas.toBlob((blob) => {
+                if (blob) {
+                  const url = URL.createObjectURL(blob)
+                  const a = document.createElement('a')
+                  a.href = url
+                  a.download = `labels-page-${page + 1}-${Date.now()}.png`
+                  document.body.appendChild(a)
+                  a.click()
+                  document.body.removeChild(a)
+                  URL.revokeObjectURL(url)
+                }
+                setTimeout(() => resolve(), 100)
+              }, 'image/png')
+            })
+          }
         }
       } else if (format === 'pdf') {
-        // For PDF, export as PNG for now
         console.log('PDF export not yet implemented, exporting as PNG instead')
         await get().exportLabels('png', elementRef)
       }
