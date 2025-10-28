@@ -161,56 +161,54 @@ export const useLabelStore = create<LabelStore>((set, get) => ({
             })
           }
         } else if (exportLayout.mode === 'one-per-page') {
-          // Export one label per page, centered on letter-size page
+          // Export one label per page as single multi-page document
           const pageWidth = 816 // 8.5" at 96 DPI
           const pageHeight = 1056 // 11" at 96 DPI
-          const timestamp = Date.now()
+          const scale = 3
 
           // Capture each label first
           const labelCanvases = await Promise.all(
             labelElements.map(el => html2canvas(el, {
-              scale: 3,
+              scale,
               backgroundColor: null,
               logging: false
             }))
           )
 
-          // Create a page for each label
-          for (let i = 0; i < labelCanvases.length; i++) {
-            const labelCanvas = labelCanvases[i]
+          // Create a single tall canvas with all pages stacked
+          const totalHeight = pageHeight * scale * labelCanvases.length
+          const documentCanvas = document.createElement('canvas')
+          documentCanvas.width = pageWidth * scale
+          documentCanvas.height = totalHeight
+          const ctx = documentCanvas.getContext('2d')!
 
-            // Create page canvas
-            const pageCanvas = document.createElement('canvas')
-            pageCanvas.width = pageWidth * 3 // Scale for quality
-            pageCanvas.height = pageHeight * 3
-            const ctx = pageCanvas.getContext('2d')!
+          // Draw each label on its own page
+          labelCanvases.forEach((labelCanvas, i) => {
+            const pageY = i * pageHeight * scale
+            // Scale label to fill entire page
+            ctx.drawImage(
+              labelCanvas,
+              0, 0, labelCanvas.width, labelCanvas.height,
+              0, pageY, documentCanvas.width, pageHeight * scale
+            )
+          })
 
-            // Fill with white background
-            ctx.fillStyle = 'white'
-            ctx.fillRect(0, 0, pageCanvas.width, pageCanvas.height)
-
-            // Center the label on the page
-            const x = (pageCanvas.width - labelCanvas.width) / 2
-            const y = (pageCanvas.height - labelCanvas.height) / 2
-            ctx.drawImage(labelCanvas, x, y)
-
-            // Download the page
-            await new Promise<void>((resolve) => {
-              pageCanvas.toBlob((blob) => {
-                if (blob) {
-                  const url = URL.createObjectURL(blob)
-                  const a = document.createElement('a')
-                  a.href = url
-                  a.download = `labels-document-page-${i + 1}-${timestamp}.png`
-                  document.body.appendChild(a)
-                  a.click()
-                  document.body.removeChild(a)
-                  URL.revokeObjectURL(url)
-                }
-                setTimeout(() => resolve(), 100)
-              }, 'image/png')
-            })
-          }
+          // Download the single multi-page document
+          await new Promise<void>((resolve) => {
+            documentCanvas.toBlob((blob) => {
+              if (blob) {
+                const url = URL.createObjectURL(blob)
+                const a = document.createElement('a')
+                a.href = url
+                a.download = `labels-document-${Date.now()}.png`
+                document.body.appendChild(a)
+                a.click()
+                document.body.removeChild(a)
+                URL.revokeObjectURL(url)
+              }
+              setTimeout(() => resolve(), 100)
+            }, 'image/png')
+          })
         } else if (exportLayout.mode === 'sheet') {
           // Export as sheet layout using template
           const templateId = exportLayout.sheetTemplate || 'avery-5163'
