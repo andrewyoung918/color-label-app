@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Search, Loader2, Plus, Palette as PaletteIcon, FileText, X } from 'lucide-react'
+import { Search, Loader2, Plus, Palette as PaletteIcon, FileText } from 'lucide-react'
 import { useColorStore } from '@/stores/useColorStore'
 import { usePaletteStore } from '@/stores/usePaletteStore'
 import { useLabelStore } from '@/stores/useLabelStore'
