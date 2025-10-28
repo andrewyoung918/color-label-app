@@ -258,7 +258,7 @@ export default function LabelsPage() {
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Export Mode
                 </label>
-                <div className="grid grid-cols-2 gap-2 mb-3">
+                <div className="grid grid-cols-3 gap-2 mb-3">
                   <button
                     onClick={() => updateConfig({ exportLayout: { ...config.exportLayout, mode: 'individual' } })}
                     className={`p-3 rounded-lg border-2 transition-colors ${
@@ -267,7 +267,17 @@ export default function LabelsPage() {
                         : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
                     }`}
                   >
-                    <div className="text-xs font-medium dark:text-gray-300">One File Per Label</div>
+                    <div className="text-xs font-medium dark:text-gray-300">Separate Files</div>
+                  </button>
+                  <button
+                    onClick={() => updateConfig({ exportLayout: { ...config.exportLayout, mode: 'one-per-page' } })}
+                    className={`p-3 rounded-lg border-2 transition-colors ${
+                      config.exportLayout?.mode === 'one-per-page'
+                        ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
+                        : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
+                    }`}
+                  >
+                    <div className="text-xs font-medium dark:text-gray-300">One Per Page</div>
                   </button>
                   <button
                     onClick={() => updateConfig({ exportLayout: { ...config.exportLayout, mode: 'sheet' } })}

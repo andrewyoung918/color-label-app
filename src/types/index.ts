@@ -62,7 +62,7 @@ export interface LabelConfig {
     lineHeight: 'tight' | 'normal' | 'loose'
   }
   exportLayout?: {
-    mode: 'individual' | 'sheet'
+    mode: 'individual' | 'sheet' | 'one-per-page'
     sheetTemplate?: 'avery-5160' | 'avery-5163' | 'avery-5164' | 'avery-5167' | 'avery-5261' | 'avery-22806' | 'label-outfitter-4' | 'custom'
     customColumns?: number
     customRows?: number
