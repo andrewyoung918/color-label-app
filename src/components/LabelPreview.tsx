@@ -25,31 +25,27 @@ export default function LabelPreview({ color, config, className = '' }: LabelPre
         ? '#ffffff'
         : '#000000'
 
-  // Typography styles
+  // Typography styles as inline styles for html2canvas
   const fontFamily = {
-    sans: 'font-sans',
-    serif: 'font-serif',
-    mono: 'font-mono'
+    sans: 'system-ui, -apple-system, sans-serif',
+    serif: 'Georgia, serif',
+    mono: 'ui-monospace, monospace'
   }[config.typography.fontFamily]
 
   const fontWeight = {
-    light: 'font-light',
-    normal: 'font-normal',
-    medium: 'font-medium',
-    semibold: 'font-semibold',
-    bold: 'font-bold'
+    light: '300',
+    normal: '400',
+    medium: '500',
+    semibold: '600',
+    bold: '700'
   }[config.typography.fontWeight]
 
-  const textAlign = {
-    left: 'text-left',
-    center: 'text-center',
-    right: 'text-right'
-  }[config.typography.alignment]
+  const textAlign = config.typography.alignment
 
   const lineHeight = {
-    tight: 'leading-tight',
-    normal: 'leading-normal',
-    loose: 'leading-loose'
+    tight: '1.25',
+    normal: '1.5',
+    loose: '1.75'
   }[config.typography.lineHeight]
 
   const dimensions = {
@@ -68,49 +64,80 @@ export default function LabelPreview({ color, config, className = '' }: LabelPre
       }}
     >
       {config.layout === 'default' && (
-        <div className={`p-6 h-full flex flex-col justify-center items-center ${fontFamily} ${lineHeight}`}>
+        <div
+          className="p-6 h-full flex flex-col justify-center items-center"
+          style={{ fontFamily, lineHeight }}
+        >
           <div
-            className={`${fontWeight} mb-2 ${textAlign}`}
-            style={{ fontSize: `${config.typography.nameSize}px` }}
+            style={{
+              fontSize: `${config.typography.nameSize}px`,
+              fontWeight,
+              textAlign,
+              marginBottom: '8px'
+            }}
           >
             {displayName}
           </div>
           {config.showBrand && (
             <div
-              className="opacity-90"
-              style={{ fontSize: `${config.typography.brandSize}px` }}
+              style={{
+                fontSize: `${config.typography.brandSize}px`,
+                opacity: 0.9,
+                fontFamily,
+                textAlign
+              }}
             >
               {color.brand}
             </div>
           )}
           {config.showSheen && color.sheen && (
             <div
-              className="opacity-75 mt-1"
-              style={{ fontSize: `${config.typography.detailsSize}px` }}
+              style={{
+                fontSize: `${config.typography.detailsSize}px`,
+                opacity: 0.75,
+                marginTop: '4px',
+                fontFamily,
+                textAlign
+              }}
             >
               {color.sheen === 'semiGloss' ? 'Semi-Gloss' : color.sheen.charAt(0).toUpperCase() + color.sheen.slice(1)}
             </div>
           )}
           {config.showCode && color.code && (
             <div
-              className="opacity-75 mt-1"
-              style={{ fontSize: `${config.typography.codeSize}px` }}
+              style={{
+                fontSize: `${config.typography.codeSize}px`,
+                opacity: 0.75,
+                marginTop: '4px',
+                fontFamily,
+                textAlign
+              }}
             >
               {color.code}
             </div>
           )}
           {config.showHex && (
             <div
-              className="opacity-75 mt-1 font-mono"
-              style={{ fontSize: `${config.typography.detailsSize}px` }}
+              style={{
+                fontSize: `${config.typography.detailsSize}px`,
+                opacity: 0.75,
+                marginTop: '4px',
+                fontFamily: 'ui-monospace, monospace',
+                textAlign
+              }}
             >
               {color.hex.toUpperCase()}
             </div>
           )}
           {config.showRgb && (
             <div
-              className="opacity-75 mt-1 font-mono"
-              style={{ fontSize: `${config.typography.detailsSize}px` }}
+              style={{
+                fontSize: `${config.typography.detailsSize}px`,
+                opacity: 0.75,
+                marginTop: '4px',
+                fontFamily: 'ui-monospace, monospace',
+                textAlign
+              }}
             >
               RGB({color.rgb.join(', ')})
             </div>
@@ -119,33 +146,54 @@ export default function LabelPreview({ color, config, className = '' }: LabelPre
       )}
 
       {config.layout === 'minimal' && (
-        <div className={`p-4 h-full flex flex-col justify-center items-center ${fontFamily} ${lineHeight}`}>
+        <div
+          className="p-4 h-full flex flex-col justify-center items-center"
+          style={{ fontFamily, lineHeight }}
+        >
           <div
-            className={`${fontWeight} ${textAlign}`}
-            style={{ fontSize: `${config.typography.nameSize}px` }}
+            style={{
+              fontSize: `${config.typography.nameSize}px`,
+              fontWeight,
+              textAlign
+            }}
           >
             {displayName}
           </div>
           {config.showBrand && (
             <div
-              className="opacity-90 mt-1"
-              style={{ fontSize: `${config.typography.brandSize}px` }}
+              style={{
+                fontSize: `${config.typography.brandSize}px`,
+                opacity: 0.9,
+                marginTop: '4px',
+                fontFamily,
+                textAlign
+              }}
             >
               {color.brand}
             </div>
           )}
           {config.showSheen && color.sheen && (
             <div
-              className="opacity-75 mt-1"
-              style={{ fontSize: `${config.typography.detailsSize}px` }}
+              style={{
+                fontSize: `${config.typography.detailsSize}px`,
+                opacity: 0.75,
+                marginTop: '4px',
+                fontFamily,
+                textAlign
+              }}
             >
               {color.sheen === 'semiGloss' ? 'Semi-Gloss' : color.sheen.charAt(0).toUpperCase() + color.sheen.slice(1)}
             </div>
           )}
           {config.showCode && color.code && (
             <div
-              className="opacity-75 mt-1"
-              style={{ fontSize: `${config.typography.codeSize}px` }}
+              style={{
+                fontSize: `${config.typography.codeSize}px`,
+                opacity: 0.75,
+                marginTop: '4px',
+                fontFamily,
+                textAlign
+              }}
             >
               {color.code}
             </div>
@@ -154,53 +202,78 @@ export default function LabelPreview({ color, config, className = '' }: LabelPre
       )}
 
       {config.layout === 'detailed' && (
-        <div className={`p-6 h-full ${fontFamily} ${lineHeight}`}>
+        <div
+          className="p-6 h-full"
+          style={{ fontFamily, lineHeight }}
+        >
           <div className="h-full flex flex-col justify-between">
-            <div className={textAlign}>
+            <div style={{ textAlign }}>
               <div
-                className={fontWeight}
-                style={{ fontSize: `${config.typography.nameSize}px` }}
+                style={{
+                  fontSize: `${config.typography.nameSize}px`,
+                  fontWeight,
+                  fontFamily
+                }}
               >
                 {displayName}
               </div>
               {config.showBrand && (
                 <div
-                  className="opacity-90 mt-1"
-                  style={{ fontSize: `${config.typography.brandSize}px` }}
+                  style={{
+                    fontSize: `${config.typography.brandSize}px`,
+                    opacity: 0.9,
+                    marginTop: '4px',
+                    fontFamily
+                  }}
                 >
                   {color.brand}
                 </div>
               )}
               {config.showSheen && color.sheen && (
                 <div
-                  className="opacity-75 mt-1"
-                  style={{ fontSize: `${config.typography.detailsSize}px` }}
+                  style={{
+                    fontSize: `${config.typography.detailsSize}px`,
+                    opacity: 0.75,
+                    marginTop: '4px',
+                    fontFamily
+                  }}
                 >
                   Sheen: {color.sheen === 'semiGloss' ? 'Semi-Gloss' : color.sheen.charAt(0).toUpperCase() + color.sheen.slice(1)}
                 </div>
               )}
             </div>
-            <div className={textAlign}>
+            <div style={{ textAlign }}>
               {config.showCode && color.code && (
                 <div
-                  className="opacity-75"
-                  style={{ fontSize: `${config.typography.codeSize}px` }}
+                  style={{
+                    fontSize: `${config.typography.codeSize}px`,
+                    opacity: 0.75,
+                    fontFamily
+                  }}
                 >
                   Code: {color.code}
                 </div>
               )}
               {config.showHex && (
                 <div
-                  className="opacity-75 mt-1"
-                  style={{ fontSize: `${config.typography.detailsSize}px` }}
+                  style={{
+                    fontSize: `${config.typography.detailsSize}px`,
+                    opacity: 0.75,
+                    marginTop: '4px',
+                    fontFamily
+                  }}
                 >
                   HEX: {color.hex.toUpperCase()}
                 </div>
               )}
               {config.showRgb && (
                 <div
-                  className="opacity-75 mt-1 font-mono"
-                  style={{ fontSize: `${config.typography.detailsSize}px` }}
+                  style={{
+                    fontSize: `${config.typography.detailsSize}px`,
+                    opacity: 0.75,
+                    marginTop: '4px',
+                    fontFamily: 'ui-monospace, monospace'
+                  }}
                 >
                   RGB: {color.rgb.join(', ')}
                 </div>
