@@ -6,6 +6,7 @@ import { groupColorsByFamily, getColorFamilyDisplayName, getColorFamilyHex, Colo
 import { getColorTemperature, getLightnessCategory, getSaturationCategory } from '@/utils/colorAnalysis'
 import { useColorStore } from '@/stores/useColorStore'
 import { usePaletteStore } from '@/stores/usePaletteStore'
+import { useLabelStore } from '@/stores/useLabelStore'
 import ColorGrid from '@/components/ColorGrid'
 
 const ITEMS_PER_PAGE = 100
@@ -29,6 +30,7 @@ export default function BrowsePage() {
   const [paletteName, setPaletteName] = useState('')
   const { library, addToLibrary } = useColorStore()
   const { createPalette } = usePaletteStore()
+  const { setPreviewColorsFromInventory } = useLabelStore()
   const loadMoreRef = useRef<HTMLDivElement>(null)
 
   // Get all colors and group them
@@ -156,8 +158,10 @@ export default function BrowsePage() {
     }
   }
 
-  const handleMakeLabel = () => {
-    // Navigate to labels page - could pass selected colors if needed
+  const handleMakeLabels = () => {
+    const selectedColorObjects = allDisplayColors.filter(c => selectedColors.has(c.id))
+    // Set labels using inventory data - will generate one label per can
+    setPreviewColorsFromInventory(selectedColorObjects)
     navigate('/labels')
     handleCancelSelection()
   }
@@ -531,11 +535,11 @@ export default function BrowsePage() {
                   Make Palette
                 </button>
                 <button
-                  onClick={handleMakeLabel}
+                  onClick={handleMakeLabels}
                   className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 text-sm font-medium"
                 >
                   <FileText className="w-4 h-4" />
-                  Make Label
+                  Make Labels
                 </button>
               </div>
             </div>

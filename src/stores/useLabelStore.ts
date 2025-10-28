@@ -11,6 +11,7 @@ interface LabelStore {
   // Actions
   updateConfig: (updates: Partial<LabelConfig>) => void
   setPreviewColors: (colors: Color[]) => void
+  setPreviewColorsFromInventory: (colors: Color[]) => void
   updateColorSheen: (colorId: string, sheen: Color['sheen']) => void
   exportLabels: (format: 'png' | 'pdf', elementRef: HTMLElement) => Promise<void>
   resetConfig: () => void
@@ -56,6 +57,40 @@ export const useLabelStore = create<LabelStore>((set, get) => ({
   // Set colors for preview
   setPreviewColors: (colors: Color[]) => {
     set({ previewColors: colors })
+  },
+
+  // Set colors from inventory - expand based on cans
+  setPreviewColorsFromInventory: (colors: Color[]) => {
+    const expandedColors: Color[] = []
+
+    colors.forEach(color => {
+      if (color.inventory) {
+        // Generate one label per can with the correct sheen
+        const sheens = ['flat', 'matte', 'eggshell', 'satin', 'semiGloss', 'gloss'] as const
+
+        sheens.forEach(sheen => {
+          const cans = color.inventory?.sheens[sheen]
+          if (cans && cans.length > 0) {
+            cans.forEach(can => {
+              // Generate `quantity` labels for this can
+              for (let i = 0; i < can.quantity; i++) {
+                expandedColors.push({
+                  ...color,
+                  sheen,
+                  // Add a unique ID suffix for each can
+                  id: `${color.id}-${sheen}-${i}`
+                })
+              }
+            })
+          }
+        })
+      } else {
+        // No inventory, just add the color once
+        expandedColors.push(color)
+      }
+    })
+
+    set({ previewColors: expandedColors })
   },
 
   // Update sheen for a specific color in preview
