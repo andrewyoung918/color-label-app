@@ -67,6 +67,9 @@ export interface LabelConfig {
     customColumns?: number
     customRows?: number
     customSpacing?: number // in pixels
+    pageSize?: 'letter' | 'a4' | 'legal' | 'custom'
+    customPageWidth?: number // in inches
+    customPageHeight?: number // in inches
   }
   shape?: 'rectangle' | 'rounded' | 'circle'
   borderRadius?: number // pixels for rounded corners

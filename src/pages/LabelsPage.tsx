@@ -28,7 +28,9 @@ export default function LabelsPage() {
 
   const handleExport = async () => {
     if (previewRef.current && previewColors.length > 0) {
-      await exportLabels('png', previewRef.current)
+      // Use PDF for one-per-page mode, PNG for others
+      const format = config.exportLayout?.mode === 'one-per-page' ? 'pdf' : 'png'
+      await exportLabels(format, previewRef.current)
     }
   }
 
@@ -290,6 +292,73 @@ export default function LabelsPage() {
                     <div className="text-xs font-medium dark:text-gray-300">Label Sheet</div>
                   </button>
                 </div>
+
+                {config.exportLayout?.mode === 'one-per-page' && (
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
+                      Page Size
+                    </label>
+                    <select
+                      value={config.exportLayout?.pageSize || 'letter'}
+                      onChange={(e) => updateConfig({
+                        exportLayout: {
+                          ...config.exportLayout,
+                          mode: 'one-per-page',
+                          pageSize: e.target.value as any
+                        }
+                      })}
+                      className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    >
+                      <option value="letter">Letter (8.5" × 11")</option>
+                      <option value="a4">A4 (210mm × 297mm)</option>
+                      <option value="legal">Legal (8.5" × 14")</option>
+                      <option value="custom">Custom Size</option>
+                    </select>
+
+                    {config.exportLayout?.pageSize === 'custom' && (
+                      <div className="grid grid-cols-2 gap-2 mt-2">
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                            Width (inches)
+                          </label>
+                          <input
+                            type="number"
+                            step="0.1"
+                            value={config.exportLayout?.customPageWidth || 8.5}
+                            onChange={(e) => updateConfig({
+                              exportLayout: {
+                                ...config.exportLayout,
+                                mode: 'one-per-page',
+                                pageSize: 'custom',
+                                customPageWidth: parseFloat(e.target.value)
+                              }
+                            })}
+                            className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded focus:outline-none focus:ring-2 focus:ring-primary-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                            Height (inches)
+                          </label>
+                          <input
+                            type="number"
+                            step="0.1"
+                            value={config.exportLayout?.customPageHeight || 11}
+                            onChange={(e) => updateConfig({
+                              exportLayout: {
+                                ...config.exportLayout,
+                                mode: 'one-per-page',
+                                pageSize: 'custom',
+                                customPageHeight: parseFloat(e.target.value)
+                              }
+                            })}
+                            className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded focus:outline-none focus:ring-2 focus:ring-primary-500"
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 {config.exportLayout?.mode === 'sheet' && (
                   <div>

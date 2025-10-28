@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { LabelConfig, Color } from '@/types'
 import html2canvas from 'html2canvas'
 import { getTemplate } from '@/utils/labelTemplates'
+import jsPDF from 'jspdf'
 
 interface LabelStore {
   // State
@@ -44,7 +45,8 @@ const defaultConfig: LabelConfig = {
   },
   exportLayout: {
     mode: 'sheet',
-    sheetTemplate: 'avery-5163'
+    sheetTemplate: 'avery-5163',
+    pageSize: 'letter'
   },
   shape: 'rectangle',
   borderRadius: 0
@@ -161,54 +163,62 @@ export const useLabelStore = create<LabelStore>((set, get) => ({
             })
           }
         } else if (exportLayout.mode === 'one-per-page') {
-          // Export one label per page as single multi-page document
-          const pageWidth = 816 // 8.5" at 96 DPI
-          const pageHeight = 1056 // 11" at 96 DPI
-          const scale = 3
+          // Export one label per page as PDF with definable page size
+          const pageSize = exportLayout.pageSize || 'letter'
+
+          // Define page dimensions in mm (jsPDF uses mm)
+          let pageWidth: number, pageHeight: number
+          let orientation: 'portrait' | 'landscape' = 'portrait'
+
+          if (pageSize === 'custom' && exportLayout.customPageWidth && exportLayout.customPageHeight) {
+            pageWidth = exportLayout.customPageWidth * 25.4 // inches to mm
+            pageHeight = exportLayout.customPageHeight * 25.4
+            orientation = pageWidth > pageHeight ? 'landscape' : 'portrait'
+          } else {
+            // Standard sizes in mm
+            const sizes = {
+              letter: { width: 215.9, height: 279.4 },
+              a4: { width: 210, height: 297 },
+              legal: { width: 215.9, height: 355.6 }
+            }
+            const size = sizes[pageSize as keyof typeof sizes] || sizes.letter
+            pageWidth = size.width
+            pageHeight = size.height
+          }
 
           // Capture each label first
           const labelCanvases = await Promise.all(
             labelElements.map(el => html2canvas(el, {
-              scale,
+              scale: 3,
               backgroundColor: null,
               logging: false
             }))
           )
 
-          // Create a single tall canvas with all pages stacked
-          const totalHeight = pageHeight * scale * labelCanvases.length
-          const documentCanvas = document.createElement('canvas')
-          documentCanvas.width = pageWidth * scale
-          documentCanvas.height = totalHeight
-          const ctx = documentCanvas.getContext('2d')!
-
-          // Draw each label on its own page
-          labelCanvases.forEach((labelCanvas, i) => {
-            const pageY = i * pageHeight * scale
-            // Scale label to fill entire page
-            ctx.drawImage(
-              labelCanvas,
-              0, 0, labelCanvas.width, labelCanvas.height,
-              0, pageY, documentCanvas.width, pageHeight * scale
-            )
+          // Create PDF
+          const pdf = new jsPDF({
+            orientation,
+            unit: 'mm',
+            format: [pageWidth, pageHeight]
           })
 
-          // Download the single multi-page document
-          await new Promise<void>((resolve) => {
-            documentCanvas.toBlob((blob) => {
-              if (blob) {
-                const url = URL.createObjectURL(blob)
-                const a = document.createElement('a')
-                a.href = url
-                a.download = `labels-document-${Date.now()}.png`
-                document.body.appendChild(a)
-                a.click()
-                document.body.removeChild(a)
-                URL.revokeObjectURL(url)
-              }
-              setTimeout(() => resolve(), 100)
-            }, 'image/png')
-          })
+          // Add each label as a page
+          for (let i = 0; i < labelCanvases.length; i++) {
+            const labelCanvas = labelCanvases[i]
+
+            if (i > 0) {
+              pdf.addPage([pageWidth, pageHeight], orientation)
+            }
+
+            // Convert canvas to image data
+            const imgData = labelCanvas.toDataURL('image/png')
+
+            // Add image to fill entire page
+            pdf.addImage(imgData, 'PNG', 0, 0, pageWidth, pageHeight)
+          }
+
+          // Download PDF
+          pdf.save(`labels-document-${Date.now()}.pdf`)
         } else if (exportLayout.mode === 'sheet') {
           // Export as sheet layout using template
           const templateId = exportLayout.sheetTemplate || 'avery-5163'
