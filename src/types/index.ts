@@ -63,7 +63,7 @@ export interface LabelConfig {
   }
   exportLayout?: {
     mode: 'individual' | 'sheet'
-    sheetTemplate?: 'avery-5160' | 'avery-5163' | 'avery-5164' | 'avery-5167' | 'avery-5261' | 'avery-22806' | 'custom'
+    sheetTemplate?: 'avery-5160' | 'avery-5163' | 'avery-5164' | 'avery-5167' | 'avery-5261' | 'avery-22806' | 'label-outfitter-4' | 'custom'
     customColumns?: number
     customRows?: number
     customSpacing?: number // in pixels

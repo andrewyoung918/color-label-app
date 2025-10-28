@@ -14,6 +14,7 @@ interface LabelStore {
   setPreviewColors: (colors: Color[]) => void
   setPreviewColorsFromInventory: (colors: Color[]) => void
   updateColorSheen: (colorId: string, sheen: Color['sheen']) => void
+  removePreviewColor: (colorId: string) => void
   exportLabels: (format: 'png' | 'pdf', elementRef: HTMLElement) => Promise<void>
   resetConfig: () => void
 }
@@ -106,6 +107,13 @@ export const useLabelStore = create<LabelStore>((set, get) => ({
     const updatedColors = previewColors.map(color =>
       color.id === colorId ? { ...color, sheen } : color
     )
+    set({ previewColors: updatedColors })
+  },
+
+  // Remove a color from preview
+  removePreviewColor: (colorId: string) => {
+    const { previewColors } = get()
+    const updatedColors = previewColors.filter(color => color.id !== colorId)
     set({ previewColors: updatedColors })
   },
 

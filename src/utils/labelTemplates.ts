@@ -65,6 +65,16 @@ export const LABEL_TEMPLATES: Record<string, LabelSheetTemplate> = {
     spacing: 24,
     isRound: true
   },
+  'label-outfitter-4': {
+    name: 'Label Outfitter',
+    description: '4" Round Labels',
+    columns: 2,
+    rows: 3,
+    labelWidth: 4,
+    labelHeight: 4,
+    spacing: 24,
+    isRound: true
+  },
   'custom': {
     name: 'Custom',
     description: 'Custom dimensions',

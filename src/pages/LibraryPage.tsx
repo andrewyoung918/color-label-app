@@ -32,7 +32,7 @@ export default function LibraryPage() {
   } = useColorStore()
 
   const { createPalette } = usePaletteStore()
-  const { setPreviewColors } = useLabelStore()
+  const { setPreviewColorsFromInventory } = useLabelStore()
 
   // Load library on mount
   useEffect(() => {
@@ -190,7 +190,7 @@ export default function LibraryPage() {
 
   const handleCreateLabels = () => {
     const selectedColorObjects = library.filter(c => selectedColors.has(c.id))
-    setPreviewColors(selectedColorObjects)
+    setPreviewColorsFromInventory(selectedColorObjects)
     navigate('/labels')
   }
 
@@ -254,7 +254,7 @@ export default function LibraryPage() {
 
   // Handle print label from inventory
   const handlePrintLabel = (color: Color) => {
-    setPreviewColors([color])
+    setPreviewColorsFromInventory([color])
     setInventoryColor(null)
     navigate('/labels')
   }

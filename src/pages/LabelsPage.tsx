@@ -1,4 +1,4 @@
-import { Download, Eye, Plus, Type, AlignLeft, AlignCenter, AlignRight } from 'lucide-react'
+import { Download, Eye, Plus, Type, AlignLeft, AlignCenter, AlignRight, X } from 'lucide-react'
 import { useRef, useEffect, useState } from 'react'
 import { useLabelStore } from '@/stores/useLabelStore'
 import { useColorStore } from '@/stores/useColorStore'
@@ -18,7 +18,7 @@ const SHEENS = [
 export default function LabelsPage() {
   const navigate = useNavigate()
   const previewRef = useRef<HTMLDivElement>(null)
-  const { config, previewColors, updateConfig, updateColorSheen, exportLabels } = useLabelStore()
+  const { config, previewColors, updateConfig, updateColorSheen, removePreviewColor, exportLabels } = useLabelStore()
   const { loadLibraryFromStorage } = useColorStore()
   const [showAdvanced, setShowAdvanced] = useState(false)
 
@@ -573,8 +573,15 @@ export default function LabelsPage() {
                   <div
                     key={color.id}
                     tabIndex={0}
-                    className="focus:outline-none focus:ring-4 focus:ring-primary-500 focus:ring-offset-2 rounded-lg transition-all"
+                    className="relative group focus:outline-none focus:ring-4 focus:ring-primary-500 focus:ring-offset-2 rounded-lg transition-all"
                   >
+                    <button
+                      onClick={() => removePreviewColor(color.id)}
+                      className="absolute -top-2 -right-2 z-10 bg-red-600 hover:bg-red-700 text-white rounded-full p-1 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                      aria-label="Remove label"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
                     <LabelPreview
                       color={color}
                       config={config}
