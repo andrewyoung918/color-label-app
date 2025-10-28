@@ -62,12 +62,14 @@ export interface LabelConfig {
     lineHeight: 'tight' | 'normal' | 'loose'
   }
   exportLayout?: {
-    mode: 'individual' | 'grid' | 'sheet'
-    columns?: number
-    rows?: number
-    spacing?: number // in pixels
-    sheetTemplate?: 'avery-5160' | 'avery-5163' | 'avery-5167' | 'custom'
+    mode: 'individual' | 'sheet'
+    sheetTemplate?: 'avery-5160' | 'avery-5163' | 'avery-5164' | 'avery-5167' | 'avery-5261' | 'avery-22806' | 'custom'
+    customColumns?: number
+    customRows?: number
+    customSpacing?: number // in pixels
   }
+  shape?: 'rectangle' | 'rounded' | 'circle'
+  borderRadius?: number // pixels for rounded corners
 }
 
 export interface SearchResult {

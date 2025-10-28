@@ -4,6 +4,7 @@ import { useLabelStore } from '@/stores/useLabelStore'
 import { useColorStore } from '@/stores/useColorStore'
 import { useNavigate } from 'react-router-dom'
 import LabelPreview from '@/components/LabelPreview'
+import { LABEL_TEMPLATES } from '@/utils/labelTemplates'
 
 const SHEENS = [
   { value: 'flat', label: 'Flat' },
@@ -80,7 +81,7 @@ export default function LabelsPage() {
             <div className="space-y-4">
               {/* Layout Selection */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Layout Style
                 </label>
                 <div className="grid grid-cols-3 gap-2">
@@ -88,31 +89,31 @@ export default function LabelsPage() {
                     onClick={() => updateConfig({ layout: 'default' })}
                     className={`p-3 rounded-lg border-2 transition-colors ${
                       config.layout === 'default'
-                        ? 'border-primary-500 bg-primary-50'
-                        : 'border-gray-200 hover:border-gray-300'
+                        ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
+                        : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
                     }`}
                   >
-                    <div className="text-xs font-medium">Default</div>
+                    <div className="text-xs font-medium dark:text-gray-300">Default</div>
                   </button>
                   <button
                     onClick={() => updateConfig({ layout: 'minimal' })}
                     className={`p-3 rounded-lg border-2 transition-colors ${
                       config.layout === 'minimal'
-                        ? 'border-primary-500 bg-primary-50'
-                        : 'border-gray-200 hover:border-gray-300'
+                        ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
+                        : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
                     }`}
                   >
-                    <div className="text-xs font-medium">Minimal</div>
+                    <div className="text-xs font-medium dark:text-gray-300">Minimal</div>
                   </button>
                   <button
                     onClick={() => updateConfig({ layout: 'detailed' })}
                     className={`p-3 rounded-lg border-2 transition-colors ${
                       config.layout === 'detailed'
-                        ? 'border-primary-500 bg-primary-50'
-                        : 'border-gray-200 hover:border-gray-300'
+                        ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
+                        : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
                     }`}
                   >
-                    <div className="text-xs font-medium">Detailed</div>
+                    <div className="text-xs font-medium dark:text-gray-300">Detailed</div>
                   </button>
                 </div>
               </div>
@@ -120,7 +121,7 @@ export default function LabelsPage() {
               {/* Size Settings */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Width (inches)
                   </label>
                   <input
@@ -135,11 +136,11 @@ export default function LabelsPage() {
                     min="1"
                     max="8"
                     step="0.5"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Height (inches)
                   </label>
                   <input
@@ -154,14 +155,14 @@ export default function LabelsPage() {
                     min="1"
                     max="8"
                     step="0.5"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                   />
                 </div>
               </div>
 
               {/* Display Options */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Display Options
                 </label>
                 <div className="space-y-2">
@@ -172,7 +173,7 @@ export default function LabelsPage() {
                       onChange={(e) => updateConfig({ showBrand: e.target.checked })}
                       className="mr-2 rounded text-primary-600 focus:ring-primary-500"
                     />
-                    <span className="text-sm text-gray-700">Show Brand Name</span>
+                    <span className="text-sm text-gray-700 dark:text-gray-300">Show Brand Name</span>
                   </label>
                   <label className="flex items-center">
                     <input
@@ -181,7 +182,7 @@ export default function LabelsPage() {
                       onChange={(e) => updateConfig({ showCode: e.target.checked })}
                       className="mr-2 rounded text-primary-600 focus:ring-primary-500"
                     />
-                    <span className="text-sm text-gray-700">Show Color Code</span>
+                    <span className="text-sm text-gray-700 dark:text-gray-300">Show Color Code</span>
                   </label>
                   <label className="flex items-center">
                     <input
@@ -190,7 +191,7 @@ export default function LabelsPage() {
                       onChange={(e) => updateConfig({ showHex: e.target.checked })}
                       className="mr-2 rounded text-primary-600 focus:ring-primary-500"
                     />
-                    <span className="text-sm text-gray-700">Show HEX Value</span>
+                    <span className="text-sm text-gray-700 dark:text-gray-300">Show HEX Value</span>
                   </label>
                   <label className="flex items-center">
                     <input
@@ -199,7 +200,7 @@ export default function LabelsPage() {
                       onChange={(e) => updateConfig({ showRgb: e.target.checked })}
                       className="mr-2 rounded text-primary-600 focus:ring-primary-500"
                     />
-                    <span className="text-sm text-gray-700">Show RGB Values</span>
+                    <span className="text-sm text-gray-700 dark:text-gray-300">Show RGB Values</span>
                   </label>
                   <label className="flex items-center">
                     <input
@@ -208,9 +209,102 @@ export default function LabelsPage() {
                       onChange={(e) => updateConfig({ showSheen: e.target.checked })}
                       className="mr-2 rounded text-primary-600 focus:ring-primary-500"
                     />
-                    <span className="text-sm text-gray-700">Show Sheen/Finish</span>
+                    <span className="text-sm text-gray-700 dark:text-gray-300">Show Sheen/Finish</span>
                   </label>
                 </div>
+              </div>
+
+              {/* Label Shape */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Label Shape
+                </label>
+                <div className="grid grid-cols-3 gap-2">
+                  <button
+                    onClick={() => updateConfig({ shape: 'rectangle', borderRadius: 0 })}
+                    className={`p-3 rounded-lg border-2 transition-colors ${
+                      config.shape === 'rectangle'
+                        ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
+                        : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
+                    }`}
+                  >
+                    <div className="text-xs font-medium dark:text-gray-300">Rectangle</div>
+                  </button>
+                  <button
+                    onClick={() => updateConfig({ shape: 'rounded', borderRadius: 16 })}
+                    className={`p-3 rounded-lg border-2 transition-colors ${
+                      config.shape === 'rounded'
+                        ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
+                        : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
+                    }`}
+                  >
+                    <div className="text-xs font-medium dark:text-gray-300">Rounded</div>
+                  </button>
+                  <button
+                    onClick={() => updateConfig({ shape: 'circle' })}
+                    className={`p-3 rounded-lg border-2 transition-colors ${
+                      config.shape === 'circle'
+                        ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
+                        : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
+                    }`}
+                  >
+                    <div className="text-xs font-medium dark:text-gray-300">Circle</div>
+                  </button>
+                </div>
+              </div>
+
+              {/* Export Settings */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Export Mode
+                </label>
+                <div className="grid grid-cols-2 gap-2 mb-3">
+                  <button
+                    onClick={() => updateConfig({ exportLayout: { ...config.exportLayout, mode: 'individual' } })}
+                    className={`p-3 rounded-lg border-2 transition-colors ${
+                      config.exportLayout?.mode === 'individual'
+                        ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
+                        : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
+                    }`}
+                  >
+                    <div className="text-xs font-medium dark:text-gray-300">One File Per Label</div>
+                  </button>
+                  <button
+                    onClick={() => updateConfig({ exportLayout: { ...config.exportLayout, mode: 'sheet' } })}
+                    className={`p-3 rounded-lg border-2 transition-colors ${
+                      config.exportLayout?.mode === 'sheet'
+                        ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
+                        : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
+                    }`}
+                  >
+                    <div className="text-xs font-medium dark:text-gray-300">Label Sheet</div>
+                  </button>
+                </div>
+
+                {config.exportLayout?.mode === 'sheet' && (
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
+                      Sheet Template
+                    </label>
+                    <select
+                      value={config.exportLayout?.sheetTemplate || 'avery-5163'}
+                      onChange={(e) => updateConfig({
+                        exportLayout: {
+                          ...config.exportLayout,
+                          mode: 'sheet',
+                          sheetTemplate: e.target.value as any
+                        }
+                      })}
+                      className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    >
+                      {Object.entries(LABEL_TEMPLATES).map(([key, template]) => (
+                        <option key={key} value={key}>
+                          {template.name} - {template.description}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
               </div>
             </div>
           </div>

@@ -53,6 +53,13 @@ export default function LabelPreview({ color, config, className = '' }: LabelPre
     height: config.dimensions.height * 96
   }
 
+  const shape = config.shape || 'rectangle'
+  const borderRadius = shape === 'circle'
+    ? '50%'
+    : shape === 'rounded'
+      ? `${config.borderRadius || 16}px`
+      : '0'
+
   return (
     <div
       className={`shadow-lg overflow-hidden ${className}`}
@@ -60,7 +67,8 @@ export default function LabelPreview({ color, config, className = '' }: LabelPre
         width: dimensions.width,
         height: dimensions.height,
         backgroundColor: bgColor,
-        color: textColor
+        color: textColor,
+        borderRadius
       }}
     >
       {config.layout === 'default' && (

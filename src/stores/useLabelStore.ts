@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { LabelConfig, Color } from '@/types'
 import html2canvas from 'html2canvas'
+import { getTemplate } from '@/utils/labelTemplates'
 
 interface LabelStore {
   // State
@@ -41,11 +42,11 @@ const defaultConfig: LabelConfig = {
     lineHeight: 'normal'
   },
   exportLayout: {
-    mode: 'grid',
-    columns: 2,
-    rows: 5,
-    spacing: 24
-  }
+    mode: 'sheet',
+    sheetTemplate: 'avery-5163'
+  },
+  shape: 'rectangle',
+  borderRadius: 0
 }
 
 export const useLabelStore = create<LabelStore>((set, get) => ({
@@ -151,11 +152,14 @@ export const useLabelStore = create<LabelStore>((set, get) => ({
               }, 'image/png')
             })
           }
-        } else if (exportLayout.mode === 'grid') {
-          // Export as grid layout - multiple labels per page
-          const columns = exportLayout.columns || 2
-          const rows = exportLayout.rows || 5
-          const spacing = exportLayout.spacing || 24
+        } else if (exportLayout.mode === 'sheet') {
+          // Export as sheet layout using template
+          const templateId = exportLayout.sheetTemplate || 'avery-5163'
+          const template = getTemplate(templateId)
+
+          const columns = templateId === 'custom' ? (exportLayout.customColumns || 2) : template.columns
+          const rows = templateId === 'custom' ? (exportLayout.customRows || 5) : template.rows
+          const spacing = templateId === 'custom' ? (exportLayout.customSpacing || 24) : template.spacing
           const labelsPerPage = columns * rows
 
           // Capture each label first
